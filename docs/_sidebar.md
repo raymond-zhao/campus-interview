@@ -1,5 +1,5 @@
 
-* [ByteDance](campus-interview/ByteDance/)
+* [ByteDance](ByteDance/)
 * [光锥元](光锥元/)
 * [小米](小米/)
 * [小鹏汽车](小鹏汽车/)
