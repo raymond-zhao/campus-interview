@@ -1,21 +1,32 @@
-## 浏览器输入url发生了什么？
+## 浏览器输入 url 发生了什么？
 
 （细说，包括每一层涉及到的协议）
 
 1. 浏览器查询缓存（强缓存、协商缓存）
-2. DNS 解析（[用到TCP、UDP](https://draveness.me/whys-the-design-dns-udp-tcp/)）、涉及**负载均衡**
-3. [TCP 三次握手连接（TCP协议）](TCPIP.md)
-4. HTTP/HTTPS 连接
+2. [DNS 解析](##DNS 解析)、涉及**负载均衡**
+3. [TCP 三次握手连接（TCP协议）](TCPIP.md/##三次握手)
+4. [HTTP/HTTPS 连接](##HTTPS 工作流程)
 5. 网关/Nginx 负载均衡
-6. 请求到达对应服务，Spring MVC 工作(如果使用了 Spring MVC)
+6. 请求到达对应服务，[Spring MVC 工作](../Spring/Spring.md/##Spring MVC 工作流程)
 7. 持久层操作(操作缓存，操作数据库)
-8. 返回 HTTP 响应给客户端
+8. 返回 [HTTP 响应](##HTTP 状态码)给客户端
 9. 浏览器解析 HTML 文件构建 DOM 树，然后解析 CSS 文件构建渲染树，等到渲染树构建完成后，CDN 加速静态资源，浏览器开始布局渲染树并将其绘制到屏幕上。
-10. 四次握手断开连接。
+10. [四次握手断开连接](./TCPIP.md/##四次挥手)
 
 ## DNS 解析
 
+[刚开始使用的是 UDP，现在逐渐新增 TCP。](https://draveness.me/whys-the-design-dns-udp-tcp/)
+
+- 第一，**主机** 向 **本地域名服务器** 的查询一般都是采用**递归查询**。
+- 第二，**本地域名服务器** 向 **根域名服务器** 的查询通常是采用**迭代查询**。
+
+![DNS 解析](https://tva1.sinaimg.cn/large/007S8ZIlly1gj8etiageoj30ng0h7dpd.jpg)
+
 ## DNS 劫持
+
+[Domain name server (DNS) Hijacking](https://www.imperva.com/learn/application-security/dns-hijacking-redirection/)
+
+![Example of DNS Hijacking and Redirection](https://tva1.sinaimg.cn/large/007S8ZIlly1gj8lwtjikyj30fw0bpweo.jpg)
 
 ## POP3 与 SMTP 的区别
 
@@ -253,6 +264,8 @@ TLS 与  SSL 的差异
 
 ## HTTP 与 FTP 文件传输
 
+![FTP使用两个TCP连接](https://gitee.com/raymond-zhao/oss/raw/master/uPic/image-20200930132601710.png)
+
 > [断点续传](https://blog.csdn.net/liang19890820/article/details/53215087)
 
 | Feature          | HTTP                                                         | FTP                                                          |
@@ -281,6 +294,9 @@ TLS 与  SSL 的差异
 - 自动的压缩机制使得传输的数据更少。
 - 没有命令/应答机制最大限度的减少了往返时延。
 
+## Cookie 与 Session
+
 ## Web 攻击技术
 
 ## 同源策略与跨域问题
+
