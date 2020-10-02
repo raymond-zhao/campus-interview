@@ -49,3 +49,34 @@
 7. InnoDB support for geospatial indexing is available in MySQL 5.7 and later.
 
 8. InnoDB utilizes hash indexes internally for its Adaptive Hash Index feature.
+
+## 索引分类
+
+## 索引好处
+
+## 索引数据结构
+
+## 为什么选择用 B+ 树
+
+## B+ 树与其他数据结构的对比
+
+## 主键与唯一索引的区别
+
+## 如果主键使用 UUID 会有什么影响
+
+## 索引失效
+
+## 最左前缀匹配
+
+## 事务特性
+
+## 事务隔离级别
+
+## MVCC
+
+## Next-Key Locks
+
+## 慢查询优化
+
+## SQL 的执行过程
+
