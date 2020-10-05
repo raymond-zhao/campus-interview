@@ -5,78 +5,166 @@
 3. 第三范式：在第二范式的基础上，消除了非主属性对码的传递依赖。
 4. BC范式：在第三范式的基础上，消除对主码子集的依赖。
 
+## MySQL 与 Redis 的对比
+
+| Feature      | MySQL                                                    | Redis                        |
+| ------------ | -------------------------------------------------------- | ---------------------------- |
+| **类型上**   | 关系型数据库                                             | 非关系型数据库               |
+| **作用上**   | 数据存储于磁盘，读写较慢。                               | 数据存储于内存，读写较快。   |
+| **缓存**     | 有查询缓存，速度较慢。                                   | 内存缓存，速度较快。         |
+| **适用场景** | 长期存储数据，具备关系型数据库的特性，如支持关联查询等。 | 存放热点数据，快速读取数据。 |
+| **线程模型** | 每个线程一个连接                                         | 单线程、IO 多路复用。        |
+
 ## 数据库引擎的对比
+
+下表有删改，详细参考官网。
 
 [MySQL 8.0 - Chapter 16 Alternative Storage Engines](https://dev.mysql.com/doc/refman/8.0/en/storage-engines.html)
 
-| Feature                                    | MyISAM       | Memory           | InnoDB       | Archive      | NDB          |
-| ------------------------------------------ | ------------ | ---------------- | ------------ | ------------ | ------------ |
-| **B-tree indexes**                         | Yes          | Yes              | Yes          | No           | No           |
-| **Clustered indexes**                      | No           | No               | Yes          | No           | No           |
-| **Hash indexes**                           | No           | Yes              | No (note 8)  | No           | Yes          |
-| **Full-text search indexes**               | Yes          | No               | Yes (note 6) | No           | No           |
-| **Index caches**                           | Yes          | N/A              | Yes          | No           | Yes          |
-| **Transactions**                           | No           | No               | Yes          | No           | Yes          |
-| **MVCC**                                   | No           | No               | Yes          | No           | No           |
-| **Locking granularity**                    | Table        | Table            | Row          | Row          | Row          |
-| **Foreign key support**                    | No           | No               | Yes          | No           | Yes (note 5) |
-| **Data caches**                            | No           | N/A              | Yes          | No           | Yes          |
-| **Storage limits**                         | 256TB        | RAM              | 64TB         | None         | 384EB        |
-| **Backup/point-in-time recovery** (note 1) | Yes          | Yes              | Yes          | Yes          | Yes          |
-| **Cluster database support**               | No           | No               | No           | No           | Yes          |
-| **Compressed data**                        | Yes (note 2) | No               | Yes          | Yes          | No           |
-| **Encrypted data**                         | Yes (note 3) | Yes (note 3)     | Yes (note 4) | Yes (note 3) | Yes (note 3) |
-| **Geospatial data type support**           | Yes          | No               | Yes          | Yes          | Yes          |
-| **Geospatial indexing support**            | Yes          | No               | Yes (note 7) | No           | No           |
-| **Replication support** (note 1)           | Yes          | Limited (note 9) | Yes          | Yes          | Yes          |
-| **T-tree indexes**                         | No           | No               | No           | No           | Yes          |
-| **Update statistics for data dictionary**  | Yes          | Yes              | Yes          | Yes          | Yes          |
-
-**Notes:**
-
-1. Implemented in the server, rather than in the storage engine.
-
-2. Compressed MyISAM tables are supported only when using the compressed row format. Tables using the compressed row format with MyISAM are read only.
-
-3. Implemented in the server via encryption functions.
-
-4. Implemented in the server via encryption functions; In MySQL 5.7 and later, data-at-rest tablespace encryption is supported.
-
-5. Support for foreign keys is available in MySQL Cluster NDB 7.3 and later.
-
-6. InnoDB support for FULLTEXT indexes is available in MySQL 5.6 and later.
-
-7. InnoDB support for geospatial indexing is available in MySQL 5.7 and later.
-
-8. InnoDB utilizes hash indexes internally for its Adaptive Hash Index feature.
+| Feature                                          | MyISAM | Memory  | InnoDB | Archive | NDB   |
+| ------------------------------------------------ | ------ | ------- | ------ | ------- | ----- |
+| **B-tree 索引**                                  | Yes    | Yes     | Yes    | No      | No    |
+| **聚簇索引**                                     | No     | No      | Yes    | No      | No    |
+| **哈希索引**                                     | No     | Yes     | No     | No      | Yes   |
+| **全文检索索引**                                 | Yes    | No      | Yes    | No      | No    |
+| **事务**                                         | No     | No      | Yes    | No      | Yes   |
+| **MVCC**                                         | No     | No      | Yes    | No      | No    |
+| **锁的粒度**                                     | Table  | Table   | Row    | Row     | Row   |
+| **支持外键**                                     | No     | No      | Yes    | No      | Yes   |
+| **数据缓存**                                     | No     | N/A     | Yes    | No      | Yes   |
+| **存储限制**                                     | 256TB  | RAM     | 64TB   | None    | 384EB |
+| **分布式集群**                                   | No     | No      | No     | No      | Yes   |
+| **数据压缩**                                     | Yes    | No      | Yes    | Yes     | No    |
+| **分片复制支持** (Server 实现，而非存储引擎实现) | Yes    | Limited | Yes    | Yes     | Yes   |
+| **T-tree 索引**                                  | No     | No      | No     | No      | Yes   |
+| **索引缓存**                                     | Yes    | N/A     | Yes    | No      | Yes   |
 
 ## 索引分类
 
-## 索引好处
-
-## 索引数据结构
-
-## 为什么选择用 B+ 树
-
-## B+ 树与其他数据结构的对比
+- 按底层数据结构：Hash Indexes、B-Tree Indexes。
+- 按数据组织结构：聚簇（clustered）索引、非聚簇索引。
+- 按索引包含的列：单列索引、联合索引。
+- 按是否是主键分：主键索引、辅助索引。
+- 按是否唯一分：唯一索引、非唯一索引。
+- 其他：全文（Fulltext）索引
 
 ## 主键与唯一索引的区别
 
-## 如果主键使用 UUID 会有什么影响
+## 索引的优缺点
 
-## 索引失效
+> Note：B+ 树是文件系统数据结构，而像红黑树、AVL 树等都是内存数据结构。
+
+**优点：**
+
+- 大大减小了服务器需要扫描的数据量
+- 帮助服务器避免排序和临时表
+- 将随机 I/O 变成顺序 I/O
+
+**缺点：**
+
+- 虽然提高了查询速度，但是会降低更新表的速度。因为更新表时不仅要保存数据，还要保存索引文件。
+- 索引文件会占用磁盘空间，但是只在索引文件非常巨大时影响才比较严重。
+- 如果列的**区分度**不高，建立索引意义不大。
+- 对于数据量比较小的表，大部分情况下全表扫描更高效。
+
+## B+ 树与其他数据结构的对比
+
+我们常用的数据结构有数组、链表、散列表、树等
+1. 数组支持快速查找，但是需要占用大量的连续存储空间、为了保证顺序存储，增删元素可能需要移动大量数据；
+2. 链表不用占用连续存储空间，但不支持快速查找，在非首尾结点增删元素也比较麻烦；
+3. 散列表可以进行快速查找，但是只支持等值匹配，不支持区间查找和顺序查找；
+4. 在双向链表之上加多层索引可以改造出跳表，跳表也可以实现快速查找，区间查询，顺序查询。如果忽略看过的 B+ 树与跳表的示意图，二者已十分接近。
+5. 关于 B 树 与 B+ 树
+     1. B 树遍历元素时效率低下，B+ 树只需要去遍历叶子节点就可以实现整棵树的遍历，而在 B树 中遍历数据则需要进行中序遍历。数据库中基于范围的查询是十分频繁，B 树不支持这样的操作或者说效率太低。
+     2. B+ 树中间节点只存索引，不存数据，所以体积更小，在磁盘大小一定（如4KB）时，相比 B 树，磁盘可以存储更多 B+ 树节点，一次读入内存的数据项也更多，减少了 IO 次数。
+     3. B+ 树的查找更稳定，数据都存储在叶子节点上，查找数据总是要走到叶子节点，而 B 树查找到数据后就返回。
+
+## 为什么选择用 B+ 树
+
+常用的 SQL 主要包括三类：
+1. 根据某个值进行精确查找（**等值查询**）
+2. 按照**区间查询**
+3. 进行**顺序查找或逆序查找**
+
+结合以上三点考虑，
+
+- 哈希虽然能够提供 O(1) 的查询性能，但是只支持**等值查询**，不适用**范围查询**和**排序查询**，最终导致全表扫描；
+- B+ 树中间节点只存索引，不存数据，所以体积更小，在磁盘页大小一定（如4KB）时，相比 B 树，单页磁盘可以存储更多 B+ 树节点，一次读入内存的数据项也更多，减少了 IO 次数。
+- B+ 树的叶节点通过指针串联成双向链表，尽管等值匹配时效率不如**哈希**，但是 B+ 树是多路平衡查找树，树的高度可以很低，最坏查找效率也为**对数级别**，最主要的是 B+ 树非常适合**区间查询**与**顺序查询**。
+- B 树的非叶子节点中存储数据，这导致在**查询连续数据时**可能会带来更多的随机 I/O，而 B+ 树的因为叶节点串联成双向链表，适合顺序 I/O。
+
+## 主键自增与使用 UUID
+
+> 当达到页面最大装填因子时，新数据将会插入到新的页面中。InnoDB 默认的最大装填因子为 15/16，其余 1/16 用于修改操作。
+
+**采用主键自增时：**因为值是顺序的，所以新插入记录总是会在已有记录后面，所以：
+
+- 因为主键自增有序，数据将会以顺序方式追加数据页，提高了页面的填充率，避免页面浪费。
+- 因为是顺序追加，所以在新插入数据的地址计算方便，不需要因为寻址消耗太多的性能。
+- 减少了页分裂与页面碎片的产生。
+
+**采用 UUID 作为主键时：**新行主键不一定比已有主键大，所以需要为新行寻找存储地址，数据的无顺序性将会导致数据分布散乱。
+
+- 待写入的目标也可能已经刷新到磁盘并且已从缓存中移除，或者还没有被加载到内存中，存储引擎需要在插入前先**找到磁盘**，然后将数据也**读取到内存**。在这个过程中将会导致大量的随机 IO。
+- 因为数据写入乱序，将会导致频繁的**页面分裂**，进而导致大量的数据移动，以便为新行分配空间。
+- 由于**无顺序性**以及频繁的**页面分裂**，将会使数据页变得**稀疏**，产生**页面碎片**。在有时使用 **OPTIMIZE TABLE** 来重建表并优化**页面填充**时也会浪费时间。
+
+## 索引失效场景
+
+1. 索引列参与了计算
+
+2. 索引列使用了 MySQL 中的函数
+3. 使用了前置模糊查询，like '%hello' 不走索引，like hello%'走索引
+4. 索引列使用了正则表达式
+5. 索引列进行了非等值查询，也就是范围查询(不满足最左匹配)。
+6. 字符串与数字进行了比较
+7. OR 条件连接时某些列没有加索引
+8. MySQL 内部优化器如果估计全表扫描比索引更快，将放弃索引。
 
 ## 最左前缀匹配
+
+> If the table has a multiple-column index, any leftmost prefix of the index can be used by the optimizer to look up rows. 
+>
+> 如果在一个索引中包含多个列，那么这个索引的任何最左前缀均可以被优化器用于查询行。
+>
+> [MySQL Documentation - Multiple-Column Indexes](https://dev.mysql.com/doc/refman/5.7/en/multiple-column-indexes.html)
+
+假如有联合索引 (a, b, c)，那么查询条件**走索引**的是 (a)、(a, b)、(a, b, c)。
+
+> **特别注意：**这里说的**走索引**其实是**覆盖索引**。
+>
+> **覆盖索引：**如果一个索引包含（或者说覆盖）所有需要查询的字段的值，成为“覆盖索引”。
+>
+> 在 [EXPLAIN 命令](https://raymond-zhao.top/2020/08/02/2020-08-02-MySQL-Explain-Cols/)的 
+>
+> 如果在 Extra 列中看到 “Using index“，说明 MySQL 正在使用**覆盖索引**。--《高性能 MySQL》 附录 D => Explain 中的列 => type 列 => index。（Page 728）
+
+常见问题：假如有联合索引 (a, b, c)，那么 (b, c)、(a, c)、(c)... 走索引吗？
+
+- 首先，我觉得问出这个问题的面试官本身就不是很专业。
+- 
 
 ## 事务特性
 
 ## 事务隔离级别
 
+## InnoDB 为什么选用 RR 做默认隔离级别？
+
 ## MVCC
 
 ## Next-Key Locks
+
+## 一条 SQL 的执行过程
 
 ## 慢查询优化
 
 ## SQL 的执行过程
 
+## MySQL 日志
+
+## MySQL 主从复制
+
+## 参考资料
+
+- [面试官，你要是敢在问我B+树，别怪我不客气！！](https://mp.weixin.qq.com/s/DtbWSGnjt001JMR78tjt5A)
+- [为什么 MySQL 使用 B+ 树](https://draveness.me/whys-the-design-mysql-b-plus-tree/)
