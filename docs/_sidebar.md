@@ -1,7 +1,7 @@
 * [首页](Home)
 * [Java 基础](JavaBasic/)
 * [Java 集合框架](JavaCollections/Map)
-* [Java 多线程与并发编程](JavaMultiThreadAndConcurrency/)
+* [Java 多线程与并发编程](JavaConcurrency/)
 * [Java 虚拟机](JVM/ClassLoader)
 * [MySQL](MySQL/Basic)
 * [Redis]()

@@ -46,7 +46,7 @@
 - 按索引包含的列：单列索引、联合索引。
 - 按是否是主键分：主键索引、辅助索引。
 - 按是否唯一分：唯一索引、非唯一索引。
-- 其他：全文（Fulltext）索引
+- 其他：全文（Fulltext）索引。
 
 ## 主键与唯一索引的区别
 
@@ -137,7 +137,9 @@
 - 隔离性（isolation): 一个事务所做的修改在最终提交以前，对其他事务是不可见的。
 - 持久性（durability): 一旦事务提交，则其所做的修改就会永久保存到数据库中。此时即使系统崩溃，修改的数据也不会丢失。
 
-## [事务隔离级别及其问题](https://raymond-zhao.top/2020/08/01/2020-08-01-MySQL-TransactionAndLock/)
+## 事务隔离级别及其问题
+
+[事务隔离级别及其问题](https://raymond-zhao.top/2020/08/01/2020-08-01-MySQL-TransactionAndLock/)
 
 - `READ UNCOMMITTED`（未提交读）：事务中的修改，即使没有提交，对其他事务也都是可见的。事务可以读取未提交的数据，这也被称为脏读（`Dirty Read`）。
 - `READ COMMITTED`（已提交读）：一个事务从开始直到提交之前，所做的任何修改对其他事务都是不可见的。这个级别有时候也叫做**不可重复读**。
@@ -155,7 +157,9 @@
 - 不可重复读：同一个事务两次读取所得到的的**记录内容**不一致，通常是由于另一个事务进行了 update 操作。
 - 幻读：同一个事务两次读取所得到的的**记录条数**不一致，通常是由于另一个事务进行了 insert 操作。
 
-## [MVCC](https://raymond-zhao.top/2020/08/01/2020-08-01-MySQL-TransactionAndLock/)
+## MVCC
+
+[MVCC](https://raymond-zhao.top/2020/08/01/2020-08-01-MySQL-TransactionAndLock/)
 
 - 通过保存数据在某个时间点的**快照**来实现的 (**Snapshot 快照图**) 来实现。
 - 不同存储引擎的 MVCC 实现是不同的，典型的有**乐观并发控制**与**悲观并发控制**两种。
@@ -198,7 +202,9 @@
 - `Gap Locks` 只能_**`阻止其他事务在该Gap中插入记录`**_，但**`无法阻止`**其他事务获取`同一个Gap` 上的 `Gap Lock`。
 - 可以通过将事务隔离级别设置为 READ COMMITTED 禁用 `Gap Locks`。
 
-## [一条 SQL 的执行过程](https://www.cnblogs.com/lfri/p/12598339.html)
+## SQL 的执行过程
+
+[SQL 的执行过程](https://www.cnblogs.com/lfri/p/12598339.html)
 
 ![img](https://img2020.cnblogs.com/blog/1365470/202003/1365470-20200330140529330-934488719.png)
 
@@ -208,7 +214,9 @@
 4. 如果查询缓存仍然不存在所需数据的话，通过**优化器**进行各种优化，包括重写査询、决定表的读取次序，选择合适索引等，而后生成执行计划；
 5. 通过**执行器**执行执行计划，操作存储引擎数据访问接口，返回结果。
 
-## [慢查询优化](https://tech.meituan.com/2014/06/30/mysql-index.html)
+## 慢查询优化
+
+[美团技术团队 - 慢查询优化](https://tech.meituan.com/2014/06/30/mysql-index.html)
 
 **建索引的几大原则：**
 
@@ -228,13 +236,59 @@
 6. 参照建索引时的几大原则添加索引
 7. 观察优化结果，不满足要求则从头开始，否则结束。
 
-## MySQL 日志
+## MySQL 三大日志
 
+[MySQL 三大日志](https://mp.weixin.qq.com/s?__biz=MzI4Njc5NjM1NQ==&mid=2247495901&idx=2&sn=1e02ebaebcc3e6a420c267beb260e97b&chksm=ebd5cff1dca246e7cb17386d00f79ba92d5a7d68cd329ad5e9a9b710c7e614b0b21e16f8f5fc&mpshare=1&scene=24&srcid=0820BOU74VHoJGesRWPD6ykC&sharer_sharetime=1597917853827&sharer_shareid=459d60cb1cece625a6a0b23694c741b3#rd)
 
+**BIN LOG：**用于记录数据库执行的**写入性**操作信息，以二进制的形式保存在磁盘中。通过追加的方式进行写入。使用场景主要有两个：
 
-## [MySQL 为什么选用 RR 做默认隔离级别？](MySQL 为什么选用 RR 做默认隔离级别？)
+- 使用场景：
+  - 主从复制：在 master 端开启 binlog，然后将 binlog 发送到各个 slave 端，slave 端执行 binlog 内容，从而达到主从数据一致。
+  - 数据恢复：通过使用 mysqlbinlog 工具来恢复数据。
+
+- 日志格式：
+  - **STATMENT：**每一条会修改数据的 SQL 语句会记录到 binlog 中。
+  - **ROW：**不记录每条 SQL 语句的上下文信息，需记录哪条数据被修改了。
+  - **MIXED：**一般的复制使用 STATEMENT 模式保存 binlog，对于 STATEMENT 模式无法复制的操作使用 ROW 模式保存 binlog。
+
+**REDO LOG：**只记录事务对数据页做了哪些修改，保证事务四大特性之一的**一致性**。
+
+- 主要组成部分：MySQL 每执行一条 DML 语句，先将记录写入**内存**中的**日志缓冲**（redo log buffer），后续某个时间点再一次性将多个操作记录写到**磁盘**上的**日志文件**（redo log file）。
+- 记录形式：大小固定，循环写入，当写到结尾时，会回到开头循环写日志。
+
+**UNDO LOG：**记录数据的逻辑变化，保证事务四大特性之一的**原子性**。一条 INSERT 语句，对应一条 DELETE 的 undo log，对于每个 UPDATE 语句，对应一条相反的 UPDATE 的 undo log。也是 MVCC 实现的关键。
+
+## MySQL 为什么选用 RR 做默认隔离级别？
+
+[MySQL 为什么选用 RR 做默认隔离级别？](https://dominicpoi.com/2019/06/16/MySQL-1/)
+
+> 这与主从复制中的 binlog 有关。
+
+![image](https://static001.geekbang.org/resource/image/a6/a3/a66c154c1bc51e071dd2cc8c1d6ca6a3.png)
+
+主库和从库之间有一个长连接，主库 A 内部有一个线程专门服务从库 B 的长连接，一个事务日志同步的完整过程是这样的：
+
+1. 从库 B 上通过 change master 命令设置主库 A 的 IP、端口、用户名、密码，以及开始请求 binlog 的位置（包括文件名和日志偏移量）。
+2. 从库 B 上执行 start slave 命令，启动两个线程（`io_thread` 和 `sql_thread`)，其中 `io_thread` 负责与主库建立连接。
+3. 主库 A 校验完用户名密码后，按照从库 B 传过来的位置从本地读取 binlog 发给 B。
+4. 从库 B 拿到 binlog 之后写到本地文件，称为中转日志（relay log）。
+5. `sql_thread` 读取中转日志，解析出日志里的命令并执行。
+
+> 而在这整个过程中，binlog 中的 STATEMENT 日志格式会导致主从不一致。
+>
+> 因为 STATEMENT 只记录了 SQL，重新恢复时，可能由于事务**提交顺序**问题，以及**索引选择**不同问题，在一些语句执行上会出现歧义。
+>
+> 而 ROW 格式则不会出现主从不一致问题，但是它在 MySQL 5.1 才引入。所以为了保证主从数据一致性，才设置为 RR 为默认级别。
 
 ## MySQL 主从复制
+
+[MySQL 主从复制](##MySQL 为什么选用 RR 做默认隔离级别？)
+
+> 就是上个问题里的图和过程。
+
+## 排查死锁
+
+[排查死锁](https://mp.weixin.qq.com/s/DChYk7WhbgMG4tRKf85G2g)
 
 ## 参考资料
 
@@ -244,8 +298,7 @@
 ```mysql
 create table idx_test
 (
-    id int not null
-        primary key,
+    id int not null primary key,
     a  int not null,
     b  int not null,
     c  int not null,
