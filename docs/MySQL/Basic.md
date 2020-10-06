@@ -123,44 +123,116 @@
 
 ## 最左前缀匹配
 
-> If the table has a multiple-column index, any leftmost prefix of the index can be used by the optimizer to look up rows. 
->
-> 如果在一个索引中包含多个列，那么这个索引的任何最左前缀均可以被优化器用于查询行。
->
-> [MySQL Documentation - Multiple-Column Indexes](https://dev.mysql.com/doc/refman/5.7/en/multiple-column-indexes.html)
+常见问题：假如有联合索引 (a, b, c)，那么 (b, c)、(a, c)、(c)... 走索引吗？（在此假设用在 where 子句中，有 (a, b, c, d) 四列）。
 
-假如有联合索引 (a, b, c)，那么查询条件**走索引**的是 (a)、(a, b)、(a, b, c)。
-
-> **特别注意：**这里说的**走索引**其实是**覆盖索引**。
->
-> **覆盖索引：**如果一个索引包含（或者说覆盖）所有需要查询的字段的值，成为“覆盖索引”。
->
-> 在 [EXPLAIN 命令](https://raymond-zhao.top/2020/08/02/2020-08-02-MySQL-Explain-Cols/)的 
->
-> 如果在 Extra 列中看到 “Using index“，说明 MySQL 正在使用**覆盖索引**。--《高性能 MySQL》 附录 D => Explain 中的列 => type 列 => index。（Page 728）
-
-常见问题：假如有联合索引 (a, b, c)，那么 (b, c)、(a, c)、(c)... 走索引吗？
-
-- 首先，我觉得问出这个问题的面试官本身就不是很专业。
-- 
+- 一言以蔽之，只要查询包含了 `a` 就走索引，即使 `a` 与 `b、c` 逆序也没关系，如(c, a)，(c, b, a) 也走索引，否则不走。
+- =、in 可以乱序。
+- 测试 SQL 见参考资料部分。
 
 ## 事务特性
 
-## 事务隔离级别
+- 原子性（atomicity): 一个事务必须被视为一个不可分割的最小工作单元，整个事务中的所有操作要么全部提交成功，要么全部失败回滚，对于一个事务来说，不可能只执行其中的一部分操作，这就是事务的原子性。
 
-## InnoDB 为什么选用 RR 做默认隔离级别？
+- 一致性（consistency): 数据库总是从一个一致性的状态转换到另外一个一致性的状态。
+- 隔离性（isolation): 一个事务所做的修改在最终提交以前，对其他事务是不可见的。
+- 持久性（durability): 一旦事务提交，则其所做的修改就会永久保存到数据库中。此时即使系统崩溃，修改的数据也不会丢失。
 
-## MVCC
+## [事务隔离级别及其问题](https://raymond-zhao.top/2020/08/01/2020-08-01-MySQL-TransactionAndLock/)
 
-## Next-Key Locks
+- `READ UNCOMMITTED`（未提交读）：事务中的修改，即使没有提交，对其他事务也都是可见的。事务可以读取未提交的数据，这也被称为脏读（`Dirty Read`）。
+- `READ COMMITTED`（已提交读）：一个事务从开始直到提交之前，所做的任何修改对其他事务都是不可见的。这个级别有时候也叫做**不可重复读**。
+- `REPEATABLE READ`（可重复读）：在**同一个事务中多次读取同样记录**的结果是一致的。
+- `SERIALIZABLE`（可串行化）：会在读取的每一行数据上都加锁，所以可能导致大量的**超时和锁争用**的问题。
 
-## 一条 SQL 的执行过程
+| 隔离级别           | 脏读 | 不可重复读 | 幻读 | 加锁读 |
+| :----------------- | :--- | :--------- | :--- | :----- |
+| `READ UNCOMMITTED` | YES  | YES        | YES  | NO     |
+| `READ COMMITTED`   | NO   | YES        | YES  | NO     |
+| `REPEATABLE READ`  | NO   | NO         | YES  | NO     |
+| `SERIALIZABLE`     | NO   | NO         | NO   | YES    |
 
-## 慢查询优化
+- 脏读：A 事务读取到了 B 事务未提交前的旧值，然后 B 又回滚了。
+- 不可重复读：同一个事务两次读取所得到的的**记录内容**不一致，通常是由于另一个事务进行了 update 操作。
+- 幻读：同一个事务两次读取所得到的的**记录条数**不一致，通常是由于另一个事务进行了 insert 操作。
 
-## SQL 的执行过程
+## [MVCC](https://raymond-zhao.top/2020/08/01/2020-08-01-MySQL-TransactionAndLock/)
+
+- 通过保存数据在某个时间点的**快照**来实现的 (**Snapshot 快照图**) 来实现。
+- 不同存储引擎的 MVCC 实现是不同的，典型的有**乐观并发控制**与**悲观并发控制**两种。
+- InnoDB 的 MVCC，通过在每行记录后面保存两个隐藏的列来实现。一个保存了行的**创建时间**，一个保存行的**过期时间**。
+- **INSERT：**为新插人的每一行保存**当前系统版本号**作为行版本。
+- **DELETE：**为删除的每一行保存**当前系统版本号**作为行删除标识。
+- **SELECT：**只査找**版本早于当前事务版本的数据行**，可以确保事务读取的行，要么是在事务开始前已经存在的，要么是事务自身插入或者修改过的。
+- **UPDATE：**插入一行新记录，保存**当前系统版本号**作为行版本号，同时保存**当前系统版本号**到原来的行作为行**删除标识**。
+- 只在 RR、RC 下工作。因为 RU 总是读取最新的数据行，而不是符合当前事务版本的数据行。而 SERIALIZABLE 则会对所有读取的行都加锁。
+
+## 如何实现非阻塞读
+
+- [MVCC](##MVCC)
+
+## 快照读与当前读
+
+- 执行 **SELECT** 操作时 InnoDB 默认会执行**快照读**，记录下此次 SELECT 的结果，之后再 SELECT 的则返回此次快照结果，即使其他事务提交了不会影响当前 SELECT 的数据，也就是**可重复读**。
+- 对于**写操作** (update、insert、delete) 均采用**当前读**。执行这三个操作时会读取最新的记录，即使是别的事务新提交的数据也可以查询到。
+
+## InnoDB 下 RR 如何防止幻读？
+
+- MVCC + Next-Key Locks: `next-key locks` 由 `record locks`(索引加锁) 和 `gap locks`(间隙锁，每次锁住的不光是需要使用的数据，还会锁住这些数据附近的数据)。
+- [MySQL 官方 InnoDB Locking](https://dev.mysql.com/doc/refman/8.0/en/innodb-locking.html)
+
+## MySQL 锁的分类
+
+- 按粒度划分：表级锁，行级锁，页级锁。
+- 按读写划分：共享锁，排它锁。
+- 按加锁方式划分：自动锁，显式锁。
+- 按操作划分：DML 锁，DDL 锁。
+- 按使用方式划分：乐观锁 (通过版本号)，悲观锁。
+
+## 行级锁与间隙锁
+
+- [MySQL 官方 InnoDB Locking](https://dev.mysql.com/doc/refman/8.0/en/innodb-locking.html)
+- 用于锁住 `Index Record` 之间的间隙。
+
+- 如果是`通过唯一索引来搜索一行记录`的时候，不需要使用 `Gap Locks`，此时 `Gap Locks` 降级为 `Record Locks`。
+- `Gap S-Lock` 与 `Gap X-Lock` 是兼容的。
+- `Gap Locks` 只能_**`阻止其他事务在该Gap中插入记录`**_，但**`无法阻止`**其他事务获取`同一个Gap` 上的 `Gap Lock`。
+- 可以通过将事务隔离级别设置为 READ COMMITTED 禁用 `Gap Locks`。
+
+## [一条 SQL 的执行过程](https://www.cnblogs.com/lfri/p/12598339.html)
+
+![img](https://img2020.cnblogs.com/blog/1365470/202003/1365470-20200330140529330-934488719.png)
+
+1. 客户端通过**连接器**建立与 Server 的连接；
+2. **查询缓存**，如果命中缓存则直接返回；
+3. 经过**分析器**进行词法分析，语法分析，之后仍然会去再查一次**查询缓存**；
+4. 如果查询缓存仍然不存在所需数据的话，通过**优化器**进行各种优化，包括重写査询、决定表的读取次序，选择合适索引等，而后生成执行计划；
+5. 通过**执行器**执行执行计划，操作存储引擎数据访问接口，返回结果。
+
+## [慢查询优化](https://tech.meituan.com/2014/06/30/mysql-index.html)
+
+**建索引的几大原则：**
+
+- 最左前缀匹配原则
+- = 和 in 可以乱序
+- 尽量选择**区分度高**的列作为索引，区分度的公式是 count(distinct col)/count(*)，比例越大扫描的记录数越少，唯一索引的区分度是为 1。
+- 索引列不要参与计算
+- 尽量的扩展索引，不要新建索引。
+
+**慢查询优化的基本思路：**
+
+1. 通过设置 SQL_NO_CACHE，先看看查询是否真的很慢；
+2. 使用 WHERE 条件进行单表查询，锁定**最小返回记录**表，找到**区分度**最高的字段；
+3. 使用 EXPLAIN 查看执行计划，是否与 2 预期结果一直；
+4. ORDER BY、LIMIT 形式的 SQL 语句让排序的表优先查；
+5. 分析业务实际使用场景
+6. 参照建索引时的几大原则添加索引
+7. 观察优化结果，不满足要求则从头开始，否则结束。
 
 ## MySQL 日志
+
+
+
+## [MySQL 为什么选用 RR 做默认隔离级别？](MySQL 为什么选用 RR 做默认隔离级别？)
 
 ## MySQL 主从复制
 
@@ -168,3 +240,33 @@
 
 - [面试官，你要是敢在问我B+树，别怪我不客气！！](https://mp.weixin.qq.com/s/DtbWSGnjt001JMR78tjt5A)
 - [为什么 MySQL 使用 B+ 树](https://draveness.me/whys-the-design-mysql-b-plus-tree/)
+
+```mysql
+create table idx_test
+(
+    id int not null
+        primary key,
+    a  int not null,
+    b  int not null,
+    c  int not null,
+    d  int null
+);
+
+create index idx_abc
+    on idx_test (a, b, c);
+
+explain select * from idx_test where a = 2; # Y, Extra: null
+explain select * from idx_test where b = 2; # N, Extra: Using where
+explain select * from idx_test where a = 2 and b = 2; # Y, Extra: null
+explain select * from idx_test where a = 2 and b = 2 and c = 2; # Y, Extra: null
+explain select * from idx_test where b = 2 and c = 2; # N, Extra: Using where
+explain select * from idx_test where a = 2 and c = 2; # Y, Extra: Using index condition
+explain select d from idx_test where a = 2 and c = 2; # Y, Extra: Using index condition
+explain select a, b, c from idx_test where a = 2 and b = 2 and c = 2; # Y, Extra: Using index
+explain select a, b, c from idx_test where c = 2 and b = 2 and a = 2; # Y, Extra: Using index
+explain select a from idx_test where a = 2 and b = 2 and c = 2; # Y, Extra: Using index
+explain select d from idx_test where a = 2 and b = 2 and c = 2; # Y, Extra: null
+explain select d from idx_test where c = 2; # Y, Extra: Using where
+explain select d from idx_test where c = 2 and a = 2; # Y, Extra: Using where
+```
+
