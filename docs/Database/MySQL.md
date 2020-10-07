@@ -50,6 +50,11 @@
 
 ## 主键与唯一索引的区别
 
+## 聚簇索引与非聚簇索引
+
+1. **聚簇索引**：表数据按照索引的顺序进行存储，即**索引项的顺序**与表中记录的**物理顺序**一致。叶子节点中存储了真实的数据行，不再有另外单独的数据页。**在一张表上最多只能创建一个聚簇索引，因为真实数据的物理存储顺序只有一种。**
+2. **非聚簇索引**：表数据存储数据与索引数据无关。叶子节点包含索引字段值及指向数据也数据行的逻辑指针，其行数量与数据表行数据量一致。
+
 ## 索引的优缺点
 
 > Note：B+ 树是文件系统数据结构，而像红黑树、AVL 树等都是内存数据结构。
@@ -279,6 +284,9 @@
 > 因为 STATEMENT 只记录了 SQL，重新恢复时，可能由于事务**提交顺序**问题，以及**索引选择**不同问题，在一些语句执行上会出现歧义。
 >
 > 而 ROW 格式则不会出现主从不一致问题，但是它在 MySQL 5.1 才引入。所以为了保证主从数据一致性，才设置为 RR 为默认级别。
+>
+> 1. [MySQL Documentation - 14.7.2.1 Transaction Isolation Levels](https://dev.mysql.com/doc/refman/5.7/en/innodb-transaction-isolation-levels.html)
+> 2. 越高的隔离级别，能解决的数据一致性问题越多，理论上性能损耗更大，可并发性越低。选择这个隔离级别是对**并发性与数据一致性相互妥协的结果**。
 
 ## MySQL 主从复制
 
@@ -321,5 +329,16 @@ explain select a from idx_test where a = 2 and b = 2 and c = 2; # Y, Extra: Usin
 explain select d from idx_test where a = 2 and b = 2 and c = 2; # Y, Extra: null
 explain select d from idx_test where c = 2; # Y, Extra: Using where
 explain select d from idx_test where c = 2 and a = 2; # Y, Extra: Using where
+
+# possible_keys 列为 idx_abc
+explain select * from idx_test where a = 1;
+# possible_keys 列为 idx_abc
+explain select * from idx_test where a = 1 and b = 2;
+# possible_keys 列为 idx_abc
+explain select * from idx_test where a = 1 and b = 2 and c = 3;
+# possible_keys 列为 idx_abc, = 和 in可以乱序，但是必须要全部出现。
+explain select * from idx_test where a = 1 and c = 3 and b = 2;
+
+explain select * from idx_test where b = 1 and c = 1; # possible_keys 列为 null
 ```
 

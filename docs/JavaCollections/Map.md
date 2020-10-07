@@ -1,6 +1,13 @@
 ## 集合框架
 
-- Java中的集合框架可以划分为两类，一类是集合Collection，用来存储同一类型的数据，Collection的子接口又分为List、Set、Queue三种；另一类是Map，用来存储键值对数据。
+![img](https://www.runoob.com/wp-content/uploads/2014/01/2243690-9cd9c896e0d512ed.gif)
+
+- Java 中的集合框架可以划分为两类：
+  - 集合 Collection：用来存储同一类型的数据，Collection 的子接口又分为 List、Set、Queue 三种；
+  - 映射 Map：用来存储键值对数据。
+
+**常用接口与实现类：**
+
 - Map、HashMap、LinkedHashMap、TreeMap
 - List：ArrayList、LinkedList、Stack
 - Set：HashSet、LinkedHashSet、TreeSet、Stack、ArrayDeque
@@ -41,9 +48,9 @@
 1. 先引用保存扩容前的数组
 2. 检查旧数组的容量是否已达到最大值，是则将阈值设置为 Integer 的最大值，并直接返回。
 3. 否则的话，申请一个新容量的数组，执行 transfer() 方法，具体的是
-   3.1 遍历旧的数组，检查每一个桶是否为空，如果不为空的话，先把它保存一份，然后将其置空，
-   3.2 接着按保存下来的桶数组的头进行遍历，计算每一个结点在新数组中的位置
-   3.3 最后将旧数组中的结点迁移到新数组中对应的位置。
+   1. 遍历旧的数组，检查每一个桶是否为空，如果不为空的话，先把它保存一份，然后将其置空；
+   2. 接着按保存下来的桶数组的头进行遍历，计算每一个结点在新数组中的位置；
+   3. 最后将旧数组中的结点迁移到新数组中对应的位置。
 4. 将旧数组的指针指向新数组
 5. 计算新的阈值
 
@@ -91,6 +98,25 @@
 ## CHM 如何保证线程安全
 
 1. JDK1.8的 CHM 主要采用 `CAS + synchronized` 的方式锁住头结点，细化了锁的粒度。
-2. JDK1.7的 CHM 主要采用 `Segment+synchronized` 分段锁实现了线程安全，这个内部类继承了`ReentrantLock`可重入锁这个类。每次加锁都会锁住`Segment`一个段，而一个`Segment`里包含了一个或多个`HashEntry`，锁的粒度较大。
+2. JDK1.7的 CHM 主要采用 `Segment + synchronized` 分段锁实现了线程安全，这个内部类继承了`ReentrantLock`可重入锁这个类。每次加锁都会锁住`Segment`一个段，而一个`Segment`里包含了一个或多个`HashEntry`，锁的粒度较大。
 
 推荐阅读：[ConcurrentHashMap](https://raymond-zhao.top/2020/07/09/2020-07-09-JUC-ConcurrentHashMap/)
+
+## HashMap、Hashtable、CHM区别
+
+|      比较方面      |                 **HashMap**                 |                   **Hashtable**                   |                    **ConcurrentHashMap**                     |
+| :----------------: | :-----------------------------------------: | :-----------------------------------------------: | :----------------------------------------------------------: |
+|    是否线程安全    |                     否                      |                        是                         |                              是                              |
+| 线程安全采用的方式 |                     无                      |          采用`synchronized`类锁，效率低           | `CAS` + `synchronized`，锁住的只有当前操作的**bucket**，不影响其他线程对其他bucket的操作，效率高 |
+|      数据结构      |            数组 + 链表 + 红黑树             |                    数组 + 链表                    |                     数组 + 链表 + 红黑树                     |
+| 是否允许`null`键值 |                     是                      |                        否                         |                              否                              |
+|    哈希地址算法    |        `(h=key.hashCode())^(h>>>16`         |                 `key.hashCode()`                  |           `(h=key.hashCode())^(h>>>16)&0x7fffffff`           |
+|      定位算法      |                `(n-1)&hash`                 |               `(hash&0x7fffffff)%n`               |                         `(n-1)&hash`                         |
+|      扩容算法      | 当键值对数量大于阈值，则容量扩容到原来的2倍 | 当键值对数量大于等于阈值，则容量扩容到原来的2倍+1 | 当键值对数量大于等于sizeCtl，**单线程创建新哈希表，多线程复制bucket到新哈希表**，容量扩容到原来的2倍 |
+|      链表插入      |         将新节点插入到链表**尾部**          |            将新节点插入到链表**头部**             |                  将新节点插入到链表**尾部**                  |
+|      继承的类      |           继承`abstractMap`抽象类           |              继承`Dictionary`抽象类               |                   继承`abstractMap`抽象类                    |
+|     实现的接口     |                实现`Map`接口                |                   实现`Map`接口                   |                   实现`ConcurrentMap`接口                    |
+|    默认容量大小    |                     16                      |                        11                         |                              16                              |
+|    默认负载因子    |                    0.75                     |                       0.75                        |                             0.75                             |
+|   统计 size 方式   |           直接返回成员变量`size`            |              直接返回成员变量`count`              | 遍历`CounterCell`数组的值进行累加，最后加上`baseCount`的值即为`size` |
+

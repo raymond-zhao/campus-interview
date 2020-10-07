@@ -1,4 +1,2 @@
-# 人间草木
-- 收集牛客上的面试题并尝试给出回答
-
-[开始吧](Home)
+# awesome-architect
+[Shall we begin ?](/Home)
