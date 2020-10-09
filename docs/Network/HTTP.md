@@ -3,15 +3,15 @@
 （细说，包括每一层涉及到的协议）
 
 1. 浏览器查询缓存（强缓存、协商缓存）
-2. [DNS 解析](##DNS 解析)、涉及**负载均衡**
-3. [TCP 三次握手连接（TCP协议）](TCPIP.md/##三次握手)
-4. [HTTP/HTTPS 连接](##HTTPS 工作流程)
+2. [DNS 解析](Network/HTTP?id=dns-解析)、涉及**负载均衡**
+3. [TCP 三次握手连接（TCP协议）](Network/TCPIP?id=三次握手)
+4. [HTTP/HTTPS 连接](Network/HTTP?id=https-工作流程)
 5. 网关/Nginx 负载均衡
-6. 请求到达对应服务，[Spring MVC 工作](../Spring/Spring.md/##Spring MVC 工作流程)
+6. 请求到达对应服务，[Spring MVC 工作](Spring/Spring?id=spring-mvc-工作流程)
 7. 持久层操作(操作缓存，操作数据库)
-8. 返回 [HTTP 响应](##HTTP 状态码)给客户端
+8. 返回 [HTTP 响应](Network/HTTP?id=http-状态码)给客户端
 9. 浏览器解析 HTML 文件构建 DOM 树，然后解析 CSS 文件构建渲染树，等到渲染树构建完成后，CDN 加速静态资源，浏览器开始布局渲染树并将其绘制到屏幕上。
-10. [四次握手断开连接](./TCPIP.md/##四次挥手)
+10. [四次握手断开连接](Network/TCPIP?id=四次挥手)
 
 ## DNS 解析
 
@@ -287,7 +287,7 @@ TLS 与  SSL 的差异
 - 发送数据中没有`meta-data`，仅传输原始的二进制文件。
 - 没有过度的分块编码。
 
-**什么使HTTP服务更快？**
+**什么使 HTTP 服务更快？**
 
 - 重用已存在的持久连接，从而有更好的TCP表现。
 - 流水线的支持使得从同一个服务器上请求多个文件更快。
@@ -296,7 +296,61 @@ TLS 与  SSL 的差异
 
 ## Cookie 与 Session
 
+**Cookie 简介：**
+
+- 浏览器第一次连接服务器时 Cookie 是不存在的
+- 服务器响应客户端时，会在 Header 中设置 Set-Cookie，服务器收到 Cookie 后存在本地。每一个 Cookie 都是 name-value 对。
+- 此后浏览器再连接服务器，都会包含上 Cookie，服务器可以用它来关联特定的请求。
+
+**Session 简介：**
+
+- Cookie 是服务器用来实现 Session 的一种方式
+- Cookie 中包含了 Session 的表示，通常被称为 SessionID。
+- Session 的管理
+  - 可以储存在内存里
+  - 或者储存在磁盘中的文件中
+  - 或者存在数据库中
+
+> `Cookie` 和 `Session` 的区别
+
+| 对比角度 | Cookie                                                       | Session                                                      |
+| -------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
+| 存放位置 | 位于客户端的一段文本、包含用户信息，是 Session 的一种实现方式。在 Tomcat 中 Cookie 的标准名为：JSESSIONID。 | 位于服务器的文件，包含用户信息。在 Tomcat 中使用 StandardSession 实现，使用到的数据结构是 ConcurrentHashMap。 |
+| 生存时间 | 可以手动设定，浏览器可以删除老旧的 Cookies。                 | 当关闭浏览器时就消失。                                       |
+| 容量大小 | 一般最大为 4KB，一个服务器可以通过不同的 Name 定义多个 Cookie，但是浏览器限制了每一个服务器可以拥有的 Cookie 数量(50个左右)。 | 理论上可以存储随意多的信息，唯一的限制是一个脚本一次最大能占用的内存，默认是 128MB。 |
+| 依赖性   | Cookie 不依赖于 Session，Cookie 是 Session 的一种实现方式。  | Session 依赖于 Cookie，当 Cookie 禁用时，可以通过 URL 回写、URL 请求参数、FORM 隐藏字段等来实现。 |
+| 安全性   | 相对较低                                                     | 相对较高                                                     |
+
+## 
+
+> [Tomcat 中的 Session 与 Cookie](https://juejin.im/post/6844903942288080903)
+
 ## Web 攻击技术
 
+**主动攻击与被动攻击**
+
+- **主动攻击**：攻击者通过直接访问 Web 应用， 把攻击代码传入的攻击模式。由于该模式是直接针对服务器上的资源进行攻击，因此攻击者需要能够访问到那些资源。
+- **被动攻击**：是指利用圈套策略执行攻击代码的攻 击模式。在被动攻击过程中，攻击者不直接对目标 Web 应用访 问发起攻击。
+
+### 跨站脚本攻击 XSS
+
+**跨站脚本攻击(Cross-Site Scripting，XSS)**是指通过存在安全漏洞的 Web 网站注册用户的**浏览器内运行非法的 HTML 标签或 JavaScript** 进行的一种攻击。
+
+防范措施：
+
+- 输入过滤：根据业务需求，适当过滤掉`' " < > \ <!--`等特殊字符，尽量保证录入后端的数据可靠性；
+- 输出过滤：同上，尽量保证输出到页面的数据可靠性；
+- 开启浏览器自带的XSS防护：可以有效过滤很多低端钓鱼链接。
+
+### 跨站请求伪造 CSRF
+
+跨站请求伪造 CSRF（Cross-site request forgery）通过伪装来自受信任用户的请求来利用受信任的网站。**根本原因**是服务器对用户身份的过分信任或验证机制的不完善。
+
+> 其他攻击方式：[Web安全](http://ramona-chen.top/cyhWebBook/Web%E5%AE%89%E5%85%A8.html)
+
 ## 同源策略与跨域问题
+
+> 如果 Protocol:Host:Port 均相同，则两个 URL 同源，否则非同源。
+>
+> [浏览器的同源策略 - MDN](https://developer.mozilla.org/zh-CN/docs/Web/Security/Same-origin_policy)
 

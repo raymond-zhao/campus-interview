@@ -31,13 +31,13 @@ Spring 框架支持以下五个作用域，如果你使用 web-aware Application
 - 当要销毁 Bean 的时候，如果 Bean 实现了 `DisposableBean` 接口，执行 destroy() 方法。
 - 当要销毁 Bean 的时候，如果 Bean 在配置文件中的定义包含 destroy-method 属性，执行指定的方法。
 
-![Bean 生命周期](http://my-blog-to-use.oss-cn-beijing.aliyuncs.com/18-9-17/5496407.jpg)
+![Bean 生命周期](https://gitee.com/raymond-zhao/oss/raw/master/uPic/5496407.jpg)
 
 > [Java Guide Spring Bean 的生命周期](https://snailclimb.gitee.io/javaguide/#/docs/system-design/framework/spring/SpringBean?id=%e4%ba%8c-bean%e7%9a%84%e7%94%9f%e5%91%bd%e5%91%a8%e6%9c%9f)
 
 ## Bean 的创建过程
 
-![img](https://ask.qcloudimg.com/http-save/yehe-6158873/oepgq3cnb0.png?imageView2/2/w/1620)
+![Bean 的创建过程](https://gitee.com/raymond-zhao/oss/raw/master/uPic/image-20201009133947220.png)
 
 这里主要是讲的 `doCreateBean()` 方法的主要过程。
 

@@ -2,6 +2,5 @@
 - 本份文档不会过多地详述细节，而是尝试采用一种“模拟面试”的口吻来进行回答，毕竟在真正进行面试时需要言简意赅，提纲挈领，否则面试官会认为面试者了解过所问问题，但是没有仔细思考过，梳理过，提炼过。
 - 本文档使用 [docsify](https://docsify.js.org/#/) 进行搭建，通过 GitHub Pages 进行部署。
 - **文档内容仅为个人理解，不保证完全正确性，如有错误之处，还望不吝指出。**
-- 访问地址：[人间草木](https://raymond-zhao.top/campus-interview/)
+- 访问地址：[awesome-architect](https://raymond-zhao.top/campus-interview/)
 - [README]() 更新时间：2020 年 10 月 5 日。
-

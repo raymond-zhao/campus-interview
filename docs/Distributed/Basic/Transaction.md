@@ -108,9 +108,15 @@ Saga 是一种补偿协议，在 Saga 模式下，分布式事务内有多个参
 
 ## Seata 中的事务控制
 
+**四种事务模式：**
 
+- [AT 模式](http://seata.io/zh-cn/docs/dev/mode/at-mode.html)
+- [TCC 模式](http://seata.io/zh-cn/docs/dev/mode/tcc-mode.html)
+- [Saga 模式](http://seata.io/zh-cn/docs/user/saga.html)
+- [XA 模式](http://seata.io/zh-cn/docs/dev/mode/xa-mode.html)
 
 ## 参考资料
 
 - [分布式事务 Seata Saga 模式首秀以及三种模式详解](https://www.sofastack.tech/blog/sofa-meetup-3-seata-retrospect/)
 - [Seata.io 文档](http://seata.io/zh-cn/docs/overview/what-is-seata.html)
+- [分布式事务 - Doocs](https://doocs.github.io/advanced-java/#/./docs/distributed-system/distributed-transaction)
