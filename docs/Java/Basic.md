@@ -1,8 +1,14 @@
-1. 面向对象三大特性
+## 面向对象三大特性
 
+## 多态与里氏代换
 
+> [JAVA的多态用几句话能直观的解释一下吗？](https://www.zhihu.com/question/30082151)
+>
+> [Java 中的多态是不是违背了里氏替换原则？](https://www.zhihu.com/question/27191817)
 
-2. [抽象类与接口的区别](https://www.zhihu.com/question/20149818)
+## 抽象类与接口
+
+> [抽象类与接口的区别](https://www.zhihu.com/question/20149818)
 
 * 接口是对动作的抽象，而抽象类是对根源的抽象。
 

@@ -36,3 +36,14 @@ public ListNode reverseBetween(ListNode head, int m, int n) {
     // 然后调用上面的反转链表的方法。
 }
 ```
+
+## K 个一组反转链表
+
+- [K 个一组翻转链表](https://leetcode-cn.com/problems/reverse-nodes-in-k-group/)
+
+```java
+public ListNode reverseKGroup(ListNode head, int k) {
+
+}
+```
+
