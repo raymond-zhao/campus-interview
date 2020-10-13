@@ -2,9 +2,10 @@
 
 ### N 数之和
 
-* [两数之和](LeetCode/NSum)
-* [三数之和](LeetCode/NSum)
-* [四数之和](LeetCode/NSum)
+* [两数之和](LeetCode/NSum?id=两数之和)
+* [三数之和](LeetCode/NSum?id=三数之和)
+* [最接近的三数之和](LeetCode/NSum?id=最接近的三数之和)
+* [四数之和](LeetCode/NSum?id=四数之和)
 
 ### 回文串
 
