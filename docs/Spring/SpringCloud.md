@@ -30,11 +30,15 @@ Feign 远程调用，核心就是通过一系列的封装和处理，将以 Java
     - 调用内部的 Feign 客户端 Client 成员的 `execute(request, this.options)` 方法执行请求，并且接收响应；
     - 对 Response 响应进行解码。
 - **客户端组件 feign.Client：**负责端到端的执行 URL 请求。发送 Request 请求到服务器，并接收 Response 响应后进行解码。
-  - 主要实现类：
-    - Client.Default类：默认的feign.Client 客户端实现类，内部使用HttpURLConnnection 完成URL请求处理；
-    - ApacheHttpClient 类：内部使用 Apache httpclient 开源组件完成URL请求处理的feign.Client 客户端实现类；
-    - OkHttpClient类：内部使用 OkHttp3 开源组件完成URL请求处理的feign.Client 客户端实现类。
-    - LoadBalancerFeignClient 类：内部使用 Ribben 负载均衡技术完成URL请求处理的feign.Client 客户端实现类。
+  - **Client.Default**：默认的 feign.Client 客户端实现类，内部使用 HttpURLConnnection 完成 URL 请求处理；
+    - 使用简单的 HTTP 连接池技术，复用能力与性能都比较低、
+  - **ApacheHttpClient**：内部使用 Apache httpclient 开源组件完成 URL 请求处理的 feign.Client 客户端实现类；
+    - 带有连接池的功能，具备优秀的 HTTP 连接的复用能力。
+  - **OkHttpClient**：内部使用 OkHttp3 开源组件完成 URL 请求处理的 feign.Client 客户端实现类；
+    - 支持 SPDY协议（Google 开发的基于 TCP 的传输层协议，用以最小化网络延迟，提升网络速度，优化用户的网络使用体验。）
+  - **LoadBalancerFeignClient**：内部使用 Ribbon 负载均衡技术完成 URL 请求处理的 feign.Client 客户端实现类。使用了 delegate 包装代理模式：
+    - Ribbon 计算出合适的 server 之后，由内部包装 delegate 代理 Client 完成到 Server 的 HTTP 请求；
+    - 所封装的 delegate 客户端代理实例的类型，可以是 Client.Default 默认客户端，也可以是 ApacheHttpClient 客户端类或 OkHttpClient 高性能客户端类，还可以其他的定制的 feign.Client 客户端实现类型。
 
 ![Feign远程调用的基本流程](https://gitee.com/raymond-zhao/oss/raw/master/uPic/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2NyYXp5bWFrZXJjaXJjbGU=,size_16,color_FFFFFF,t_70.png)
 
@@ -44,7 +48,7 @@ Feign 远程调用，核心就是通过一系列的封装和处理，将以 Java
 - 当接口的方法被调用，通过 JDK 的代理，来生成具体的 RequesTemplate；
 - RequesTemplate 再生成 Request 对象；
 - Request 对象交给 Client 去处理，其中 Client 可以是 HttpUrlConnection、HttpClient 也可以是 Okhttp；
-- 最后 Client 被封装到 LoadBalanceClient 类，这个类结合 Ribbon 做到了负载均衡。
+- 最后 Client 被封装到 LoadBalanceClient 类，这个类结合 Ribbon 做到了负载均衡；
 - **应用了模板方法、代理模式等设计模式。**
 
 ## Spring Session 工作原理
