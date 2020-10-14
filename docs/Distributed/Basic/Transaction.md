@@ -99,7 +99,7 @@ Saga 是一种补偿协议，在 Saga 模式下，分布式事务内有多个参
 
 - A 系统执行完本地事务之后，发送消息到 MQ；
 - 这里会有个专门消费 MQ 的**最大努力通知服务**，这个服务会消费 MQ 然后写入数据库中记录下来，或者是放入内存队列，接下来调用 B 系统的接口；
-- 如果 B 系统执行成功，那可喜可贺，但是如果 B 系统执行失败，那么饿最大努力通知服务将会定时尝试重新调用系统 B，，如此反复 N 次未果的话将会放弃。
+- 如果 B 系统执行成功，那可喜可贺，但是如果 B 系统执行失败，那么最大努力通知服务将会定时尝试重新调用系统 B，，如此反复 N 次未果的话将会放弃。
 
 ## 如何选型分布式事务？
 
@@ -107,6 +107,8 @@ Saga 是一种补偿协议，在 Saga 模式下，分布式事务内有多个参
 - 一般的分布式场景，使用最终一致性方案。
 
 ## Seata 中的事务控制
+
+> 详情见 [SpringCloud 部分的 Seata 工作原理](Spring/SpringCloud)
 
 **四种事务模式：**
 
@@ -120,3 +122,4 @@ Saga 是一种补偿协议，在 Saga 模式下，分布式事务内有多个参
 - [分布式事务 Seata Saga 模式首秀以及三种模式详解](https://www.sofastack.tech/blog/sofa-meetup-3-seata-retrospect/)
 - [Seata.io 文档](http://seata.io/zh-cn/docs/overview/what-is-seata.html)
 - [分布式事务 - Doocs](https://doocs.github.io/advanced-java/#/./docs/distributed-system/distributed-transaction)
+

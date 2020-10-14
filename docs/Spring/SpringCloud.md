@@ -1,14 +1,15 @@
 ## Feign 工作原理
 
-> 推荐阅读：[Feign原理(图解)](https://www.cnblogs.com/crazymakercircle/p/11965726.html)
+> 本部分总结自：[Feign原理(图解)](https://www.cnblogs.com/crazymakercircle/p/11965726.html) 与 Feign 源码。
 
 Feign 远程调用，核心就是通过一系列的封装和处理，将以 Java 注解的方式定义的远程调用 API 接口，最终转换成 HTTP 的请求形式，然后将 HTTP 的请求的响应结果，解码成 Java Bean，返回给调用者。
 
-在微服务启动时，
+**在微服务启动时：**
 
-- Feign 会进行包扫描，对加 @FeignClient 注解的接口，按照注解的规则，创建远程接口的本地 JDK Proxy 代理实例。
-- 然后，将这些本地 Proxy 代理实例，注入到 Spring IoC 容器中；
-- 当远程接口的方法被调用，由 Proxy 代理实例去完成真正的远程访问，并且返回结果。
+1. 扫描所有加上 @FeignClient 注解的远程接口，创建本地 JDK Proxy 代理实例，生成 RequestTemplate，并且注册到 IoC 容器中；
+2. 进入 FeignInvocationHandler 调用处理器这个类，根据其成员变量 dispatch 完成从 Method 到 MethodHandler 的映射，然后调用 MethodHandler 的 invoke(...) 方法；
+3. 进入 MethodHandler 类，通过其内部 Client 对象，完成实际的 URL 请求、获取响应结果，根据选用的 Client 对象的类型进行解析（主要还是负载均衡 Client ），最后返回给调用者。
+4. **应用了模板方法、代理模式等设计模式。**
 
 在这个过程中，各组件的作用如下：
 
@@ -22,7 +23,7 @@ Feign 远程调用，核心就是通过一系列的封装和处理，将以 Java
   - 成员变量 `Map<Method, MethodHandler> dispatch;` 保存着远程接口方法 Method 到 MethodHandler 方法处理器的映射。
   - `invoke(...)` 方法：
     - 根据 Java 反射的方法实例，在 dispatch 映射对象中，找到对应的 MethodHandler 方法处理器；
-    - 调用 MethodHandler 方法处理器的 invoke(...) 方法，完成实际的HTTP请求和结果的处理。
+    - 调用 MethodHandler 方法处理器的 invoke(...) 方法，完成实际的 HTTP 请求和结果的处理。
 - **方法处理器 MethodHandler**：
   - `invoke(...)`方法：完成实际远程请求，返回解码后的远程响应。
   - 实现类：`SynchronousMethodHandler `提供了基本的远程 URL 的同步请求处理，`invoke(…)` 方法，调用了自己的 `executeAndDecode(…)` 请求执行和结果解码方法。该方法的工作步骤：
@@ -41,15 +42,6 @@ Feign 远程调用，核心就是通过一系列的封装和处理，将以 Java
     - 所封装的 delegate 客户端代理实例的类型，可以是 Client.Default 默认客户端，也可以是 ApacheHttpClient 客户端类或 OkHttpClient 高性能客户端类，还可以其他的定制的 feign.Client 客户端实现类型。
 
 ![Feign远程调用的基本流程](https://gitee.com/raymond-zhao/oss/raw/master/uPic/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2NyYXp5bWFrZXJjaXJjbGU=,size_16,color_FFFFFF,t_70.png)
-
-- 首先通过 @EnableFeignCleints 注解开启 FeignCleint；
-- 根据 Feign 的规则实现接口，并加 @FeignCleint 注解；
-- 程序启动后，会进行包扫描，扫描所有的 @FeignCleint 的注解的类，并将这些信息注入到 IoC 容器中；
-- 当接口的方法被调用，通过 JDK 的代理，来生成具体的 RequesTemplate；
-- RequesTemplate 再生成 Request 对象；
-- Request 对象交给 Client 去处理，其中 Client 可以是 HttpUrlConnection、HttpClient 也可以是 Okhttp；
-- 最后 Client 被封装到 LoadBalanceClient 类，这个类结合 Ribbon 做到了负载均衡；
-- **应用了模板方法、代理模式等设计模式。**
 
 ## Spring Session 工作原理
 
@@ -100,7 +92,9 @@ Feign 远程调用，核心就是通过一系列的封装和处理，将以 Java
 - 第一次使用 Session，浏览器将会保存相应信息 JSESSIONID 这个 Cookie；
 - 以后浏览器访问网站时将会带上这个网站的 Cookie；
 - 在子域时进行作用域放大，同时 JSON 序列化对象存储到 Redis；
-- **关于子域放大为什么会生效**：[RFC 6265](http://tools.ietf.org/html/rfc6265)，忽略任何前导点，所以可以在子域和顶级域上使用 Cookie，而 Session 是利用 Cookie 实现的。
+- **关于子域放大为什么会生效**：[RFC 6265](http://tools.ietf.org/html/rfc6265)，**忽略任何前导点**，所以可以在子域和顶级域上使用 Cookie，而 Session 是利用 Cookie 实现的。
+
+> **一言以蔽之**：Spring 实现了一个实现了 javax.servlet 包下 Filter 的 Bean，结合 Redis 作为存储容器，利用 **装饰器模式** 将原生的 request 与 response 对象进行包装，包装后的对象应用在后面的整个 doFilter() 执行链，以后 Session 不用再从原生的 HttpServletRequest 中获取，而是从 Redis 中获取。
 
 **源码分析**
 
