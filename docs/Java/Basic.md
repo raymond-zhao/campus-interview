@@ -26,7 +26,7 @@
 * 抽象类的功能应该要远多于接口，但是定义抽象类的代价较高。因为高级语言一个类只能继承一个父类，即你在设计这个类的时候必须要抽象出所有这个类的子类所具有的共同属性和方法；即你在设计这个类的时候必须要抽象出所有这个类的子类所具有的共同属性和方法；因此每个接口你只需要将特定的动作方法抽象到这个接口即可。
 * 也就是说，接口的设计具有更大的可扩展性，而抽象类的设计必须十分谨慎。
 
-3. equals() 与 hashCode()
+## equals() 与 hashCode()
 
 > - hashCode() 返回的并不是实际的内存地址，而是与内存地址相关联的计算结果值。如果是实际内存地址的话，JVM 中的频繁 GC 和内存移动将会导致对象 hashCode 的改变。
 > - 从源码中可以看到 hashCode() 产生于 [ObjectSynchronizer::FastHashCode](http://hg.openjdk.java.net/jdk8/jdk8/hotspot/file/87ee5ee27509/src/share/vm/runtime/synchronizer.cpp)，它具体的实现在 [synchronizer.cpp](http://hg.openjdk.java.net/jdk8/jdk8/hotspot/file/87ee5ee27509/src/share/vm/runtime/synchronizer.cpp) 中的 get_next_hash。
@@ -85,6 +85,7 @@ public int hashCode() {
 
 - 参考：[对Java中HashCode方法的深入思考](https://juejin.im/post/6844903910839156743)
 
+## `equals()` 与 `==`
 
 ## 关键字作用域
 
@@ -94,4 +95,6 @@ public int hashCode() {
 | `default`     | ✅      | ✅      |      |        |
 | `protected`   | ✅      | ✅      | ✅    |        |
 | `public`      | ✅      | ✅      | ✅    | ✅      |
+
+## IO
 
