@@ -41,11 +41,21 @@
         nextText: 'Next',
         crossChapter: true,
         crossChapterText: true
+      },
+      tabs: {
+        persist    : true,      // default
+        sync       : false,      // default
+        theme      : 'material', // default
+        tabComments: true,      // default
+        tabHeadings: true       // default
       }
     }
   </script>
   
   <script src="//cdn.jsdelivr.net/npm/docsify/lib/docsify.min.js" data-ga="UA-153445863-1"></script>
+  <!-- docsify-tabs (latest v1.x.x) -->
+  <script src="https://cdn.jsdelivr.net/npm/docsify-tabs@1"></script>
+
   <!-- Emoji -->
   <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/emoji.min.js"></script>
   <!-- Fulltext Search -->
@@ -74,3 +84,10 @@
   <script src="//cdn.jsdelivr.net/npm/docsify-katex@latest/dist/docsify-katex.js"></script>
 </body>
 </html>
+
+<style>
+  :root {
+    --docsifytabs-border-color: #ededed;
+    --docsifytabs-tab-highlight-color: #42B983;
+  }
+</style>

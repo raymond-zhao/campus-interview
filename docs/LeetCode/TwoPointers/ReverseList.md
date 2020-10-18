@@ -2,6 +2,8 @@
 
 - [反转链表](https://leetcode-cn.com/problems/reverse-linked-list/)
 
+<!-- tabs:start -->
+# **迭代**
 ```java
 public ListNode reverseList(ListNode head) {
     if (head == null) return null;
@@ -14,8 +16,10 @@ public ListNode reverseList(ListNode head) {
     }
     return pre;
 }
+```
 
-// recursive
+# **递归**
+```java
 // src = [1->2->3->4->5->6->null]
 public ListNode reverseList(ListNode head) {
     if (head == null || head.next == null) return head;
@@ -33,7 +37,7 @@ public ListNode reverseList(ListNode head) {
     return last;
 }
 ```
-
+<!-- tabs:end -->
 ## 反转链表的前 K 个结点
 
 > [『LeetCode』 上无此题，在上一题的基础上更改，为下一题做准备。](https://leetcode-cn.com/problems/reverse-linked-list-ii/solution/bu-bu-chai-jie-ru-he-di-gui-di-fan-zhuan-lian-biao/)
@@ -72,8 +76,10 @@ public ListNode reverseN(ListNode head, int k) {
 
 - [反转链表 II - 反转 m~n 之间的链表](https://leetcode-cn.com/problems/reverse-linked-list-ii/)
 
+<!-- tabs:start -->
+
+# ** 迭代 **
 ```java
-// 迭代
 public ListNode reverseBetween(ListNode head, int m, int n) {
     if (head == null || head.next == null) return head;
     ListNode pre = null, cur = head;
@@ -97,8 +103,10 @@ public ListNode reverseBetween(ListNode head, int m, int n) {
     tail.next = cur;
     return head;
 }
+```
 
-// 递归
+# ** 递归 **
+```java
 public ListNode reverseBetween(ListNode head, int m, int n) {
 	if (m == 1)
         return reverseN(head, n); // 这个函数的函数体在上一题
@@ -107,6 +115,7 @@ public ListNode reverseBetween(ListNode head, int m, int n) {
     return head;
 }
 ```
+<!-- tabs:end -->
 
 ## K 个一组反转链表
 

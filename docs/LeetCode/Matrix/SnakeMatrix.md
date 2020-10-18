@@ -1,4 +1,4 @@
-## 起源：螺旋矩阵
+## 螺旋矩阵
 
 [螺旋矩阵](https://leetcode-cn.com/problems/spiral-matrix/)
 
@@ -23,40 +23,6 @@ public int[] spiralOrder(int[][] matrix) {
         if (++left > right) break;
     }
     return res;
-}
-```
-
-## Main 函数
-
-```java
-public static void main(String[] args) {
-    int n = 6;
-    int[][] clockwise = clockwise(n);
-    System.out.println("-----------顺时针-----------");
-    for (int[] row : clockwise) {
-        for (int val : row) {
-            System.out.print(val + "\t");
-        }
-        System.out.println();
-    }
-
-    int[][] anticlockwise = anticlockwise(n);
-    System.out.println("-----------逆时针-----------");
-    for (int[] row : anticlockwise) {
-        for (int val : row) {
-            System.out.print(val + "\t");
-        }
-        System.out.println();
-    }
-
-    int[][] matrix = generateMatrix(n);
-    System.out.println("-----------顺逆时针-----------");
-    for (int[] row : matrix) {
-        for (int val : row) {
-            System.out.print(val + "\t");
-        }
-        System.out.println();
-    }
 }
 ```
 
@@ -198,3 +164,36 @@ private static int[][] generateMatrix(int n) {
 }
 ```
 
+> Main 函数
+
+```java
+public static void main(String[] args) {
+    int n = 6;
+    int[][] clockwise = clockwise(n);
+    System.out.println("-----------顺时针-----------");
+    for (int[] row : clockwise) {
+        for (int val : row) {
+            System.out.print(val + "\t");
+        }
+        System.out.println();
+    }
+
+    int[][] anticlockwise = anticlockwise(n);
+    System.out.println("-----------逆时针-----------");
+    for (int[] row : anticlockwise) {
+        for (int val : row) {
+            System.out.print(val + "\t");
+        }
+        System.out.println();
+    }
+
+    int[][] matrix = generateMatrix(n);
+    System.out.println("-----------顺逆时针-----------");
+    for (int[] row : matrix) {
+        for (int val : row) {
+            System.out.print(val + "\t");
+        }
+        System.out.println();
+    }
+}
+```

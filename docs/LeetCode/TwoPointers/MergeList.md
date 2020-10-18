@@ -2,8 +2,10 @@
 
 - [合并两个有序链表](https://leetcode-cn.com/problems/merge-two-sorted-lists/)
 
+<!-- tabs:start -->
+
+# **迭代法**
 ```java
-// 迭代
 public ListNode mergeTwoLists(ListNode l1, ListNode l2) {
     ListNode dummy = new ListNode(-1);
     ListNode pre = dummy;
@@ -20,8 +22,9 @@ public ListNode mergeTwoLists(ListNode l1, ListNode l2) {
     pre.next = l1 == null ? l2 : l1;
     return dummy.next;
 }
-
-// 递归
+```
+# **递归**
+```java
 public ListNode mergeTwoLists(ListNode l1, ListNode l2) {
     if (l1 == null) return l2;
     else if (l2 == null) return l1;
@@ -34,37 +37,15 @@ public ListNode mergeTwoLists(ListNode l1, ListNode l2) {
     }
 }
 ```
+<!-- tabs:end -->
 
 ## 合并 K 个升序链表
 
 - [合并K个升序链表](https://leetcode-cn.com/problems/merge-k-sorted-lists/)
 
-> 方法一：先把所有结点的值添加到辅助列表里，然后 Collections.sort() 排序，最后重造。
->
-> 面试时不可取。
+<!-- tabs:start -->
 
-```java
-public ListNode mergeKLists(ListNode[] lists) {
-    if (lists == null || lists.length == 0) return null;
-    List<Integer> helper = new ArrayList<>();
-    for (ListNode listNode : lists) {
-        while (listNode != null) {
-            helper.add(listNode.val);
-            listNode = listNode.next;
-        }
-    }
-    Collections.sort(helper);
-    ListNode dummy = new ListNode(-1);
-    ListNode pre = dummy;
-    for (Integer x : helper) {
-        pre.next = new ListNode(x);
-        pre = pre.next;
-    }
-    return dummy.next;
-}
-```
-
-> 方法二：优先队列 => 小根堆
+# **优先队列**
 
 ```java
 /**
@@ -96,7 +77,7 @@ public ListNode mergeKLists(ListNode[] lists) {
 }
 ```
 
-> 方法三：分治法
+# **分治法**
 
 ```java
 
@@ -125,3 +106,27 @@ public ListNode mergeTwoLists(ListNode l1, ListNode l2) {
     }
 }
 ```
+
+# **回炉重造**
+
+```java
+public ListNode mergeKLists(ListNode[] lists) {
+    if (lists == null || lists.length == 0) return null;
+    List<Integer> helper = new ArrayList<>();
+    for (ListNode listNode : lists) {
+        while (listNode != null) {
+            helper.add(listNode.val);
+            listNode = listNode.next;
+        }
+    }
+    Collections.sort(helper);
+    ListNode dummy = new ListNode(-1);
+    ListNode pre = dummy;
+    for (Integer x : helper) {
+        pre.next = new ListNode(x);
+        pre = pre.next;
+    }
+    return dummy.next;
+}
+```
+<!-- tabs:end -->
