@@ -68,7 +68,7 @@ void testLimit() {
 
 ## 704. 二分查找
 
-- 题目链接：[704. 二分查找](https://leetcode-cn.com/problems/binary-search/)
+- [704. 二分查找](https://leetcode-cn.com/problems/binary-search/)
 
 给定一个 $n$ 个元素有序的（升序）整型数组 `nums` 和一个目标值 `target`  ，写一个函数搜索 `nums` 中的 `target`，如果目标值存在返回下标，否则返回 `-1`。
 
@@ -120,7 +120,7 @@ public int search(int[] nums, int target) {
 
 ## 35. 搜索插入位置
 
-- 题目链接[35. 搜索插入位置](https://leetcode-cn.com/problems/search-insert-position/)
+- [35. 搜索插入位置](https://leetcode-cn.com/problems/search-insert-position/)
 
 给定一个排序数组和一个目标值，在数组中找到目标值，并返回其索引。如果目标值不存在于数组中，返回它将会被按顺序插入的位置。
 
@@ -170,7 +170,7 @@ public int searchInsert(int[] nums, int target) {
 
 ## 34. 在排序数组中查找元素的第一个和最后一个位置
 
-- 题目链接：[34. 在排序数组中查找元素的第一个和最后一个位置](https://leetcode-cn.com/problems/find-first-and-last-position-of-element-in-sorted-array/)
+- [34. 在排序数组中查找元素的第一个和最后一个位置](https://leetcode-cn.com/problems/find-first-and-last-position-of-element-in-sorted-array/)
 
 给定一个按照升序排列的整数数组 $nums$，和一个目标值 $target$。找出给定目标值在数组中的开始位置和结束位置。
 
@@ -304,6 +304,94 @@ public boolean search(int[] nums, int target) {
     return false;
 }
 ```
+
+## 153. 寻找旋转排序数组中的最小值
+
+- [153. 寻找旋转排序数组中的最小值](https://leetcode-cn.com/problems/find-minimum-in-rotated-sorted-array/)
+
+假设按照升序排序的数组在预先未知的某个点上进行了旋转。( 例如，数组 `[0,1,2,4,5,6,7]` 可能变为 `[4,5,6,7,0,1,2]` )。找出其中最小的元素。可以假设数组中不存在重复元素。
+
+<!-- tabs:start -->
+
+### **思路一**
+
+```java
+// 双百
+public int findMin(int[] nums) {
+    if (nums == null || nums.length == 0)
+        throw new IllegalArgumentException("数组为空，不存在重复元素。");
+	int res = nums[0];
+    int left = 0, right = nums.length - 1;
+    while (left <= right) {
+        int mid = (left + right) >>> 1;
+        if (nums[mid] < nums[right]) { // [mid, right] 有序，最小值在最左边。
+            res = Math.min(nums[mid], res);
+            right = mid - 1;
+        } else { // [left, mid] 有序，最小值在最左边。
+            res = Math.min(res, nums[left]);
+            left = mid + 1;
+        }
+    }
+    return res;
+}
+```
+
+### **思路二**
+
+```java
+public int findMin(int[] nums) {
+    if (nums == null || nums.length == 0)
+        throw new IllegalArgumentException("数组为空，不存在重复元素。");
+    int left = 0, right = nums.length - 1;
+    while (left < right) { // 变化 1
+        int mid = (left + right) >>> 1;
+        if (nums[mid] < nums[right]) { // [mid, right] 有序，最小值在最左边。
+            right = mid;  // 变化 2
+        } else { // [left, mid] 有序，最小值在最左边。
+            left = mid + 1;
+        }
+    }
+    return nums[left]; // 变化 3
+}
+```
+
+<!-- tabs:end -->
+
+从本题中我们还应该学到的一点时，要在一个数组中查找某一个数 `x`，如果 `x` 不存在，那返回值应该是什么？
+
+- 此时，我们不可以返回 `Integer.MIN_VALUE ~ Integer.MAX_VALUE` 之间的数，因为它确实是个整数，但也确实可能不是我们所寻找的 `target`。
+
+- 所以，这个时候选择抛异常，应该是个比较不错的选择。
+
+## 154. 寻找旋转排序数组中的最小值 II
+
+- [154. 寻找旋转排序数组中的最小值 II](https://leetcode-cn.com/problems/find-minimum-in-rotated-sorted-array-ii/)
+- 在上一题的基础上，增加了 **元素可重复** 这个条件。
+
+```java
+public int findMin(int[] nums) {
+    if (nums == null || nums.length == 0)
+        throw new IllegalArgumentException("数组为空，不存在重复元素。");
+    int left = 0, right = nums.length - 1;
+    while (left < right) {
+        int mid = (left + right) >>> 1;
+        if (nums[mid] < nums[right]) { // [mid, right] 有序
+            right = mid;
+        } else if (nums[mid] > nums[right]) {
+            left = mid + 1;
+        } else { // nums[mid] == nums[right]
+            --right;
+        }
+    }
+    // 退出 while 循环时 left == right，
+    // 此时 [left, right] 包含且仅包含 1 个元素，
+    // 而这个元素可能就是我们要找的答案。
+    // 在本题中，一定是我们要找的答案。
+    return nums[left];
+}
+```
+
+
 
 ---
 
