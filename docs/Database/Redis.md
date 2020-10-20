@@ -324,3 +324,40 @@ public String get(key) {
 
 ## 主从复制原理
 
+## 在主从复制时是如何保证数据一致的？
+
+## Redis 内存回收策略
+
+1. 当Redis收到一条会添加数据的命令
+2. Redis检查内存使用情况，是否超过最大内存限制
+3. 超过则执行内存驱逐策略，然后执行命令。
+
+## 近似 LRU 的具体实现
+
+- [Redis作为LRU Cache的实现](https://developer.aliyun.com/article/63034)
+- [Redis 内存回收策略和key失效机制](https://zhuanlan.zhihu.com/p/149528273)
+
+全局 LRU 时钟
+
+```c
+#define REDIS_LRU_BITS 24
+unsigned lruclock:REDIS_LRU_BITS; /* Clock for LRU eviction */
+```
+
+Redis 实现的是近似 LRU 算法，不是严格意义上的 LRU 算法。近似 LRU 算法通过 **随机采样法** 淘汰数据，每次默认随机出 5 个 key，从里面淘汰掉最近最少使用的 key。
+
+为了实现近似 LRU 算法，Redis 给每个 key 额外增加了一个 24bit 的字段，用来存储该 key 最后一次被访问的时间。
+
+> 可以通过设置值 maxmemory-samples 参数修改采样数量
+
+**Redis 3.0 优化**
+
+- 新算法会维护一个候选池（大小为 16），池中的数据根据访问时间进行排序；
+- 第一次随机选取的 key 都会放入池中；
+- 随后每次随机选取的 key 只有在访问时间小于池中最小的时间才会放入池中，直到候选池被放满；
+- 当放满后，如果有新的 key 需要放入，则将池中最后访问时间最大（最近被访问）的移除。
+
+当需要淘汰时，需要从池中捞出最久没被访问的key淘汰掉就行了。
+
+## 近似 LFU 的具体实现
+

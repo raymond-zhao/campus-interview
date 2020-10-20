@@ -85,6 +85,10 @@
 1. JDK1.8的 CHM 主要采用 `CAS + synchronized` 的方式锁住头结点，细化了锁的粒度。
 2. JDK1.7的 CHM 主要采用 `Segment + synchronized` 分段锁实现了线程安全，这个内部类继承了`ReentrantLock`可重入锁这个类。每次加锁都会锁住`Segment`一个段，而一个`Segment`里包含了一个或多个`HashEntry`，锁的粒度较大。
 
+## 为什么用了 synchronized 之后还要用 CAS 保证线程安全?
+
+
+
 推荐阅读：[ConcurrentHashMap](https://raymond-zhao.top/2020/07/09/2020-07-09-JUC-ConcurrentHashMap/)
 
 ## HashMap、Hashtable、CHM区别

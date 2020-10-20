@@ -143,3 +143,5 @@ private final Map<String, ObjectFactory<?>> singletonFactories = new HashMap<>(1
 
 > 推荐阅读：[面试官:“谈谈Spring中都用到了那些设计模式?”](https://juejin.im/post/6844903849849962509)
 >
+
+## Spring 是如何把注解标注的对象加入 IoC 容器的？

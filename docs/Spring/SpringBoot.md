@@ -13,3 +13,7 @@ Spring Boot 所有自动配置类都是在启动的时候进行扫描并加载�
 
 - [Spring Boot 自动装配原理初探](https://juejin.im/post/6844904009577267207)
 
+## Spring Boot Starter
+
+## Starter Jar 包与以往的 Jar 包有何不同？
+
