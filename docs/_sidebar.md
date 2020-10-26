@@ -1,4 +1,5 @@
 * [首页](Home)
+* [诗词歌赋](Poetry/)
 * [数据结构](DataStructure/)
 * [算法](Algos/)
 * [分门别类刷 LeetCode](LeetCode/)
