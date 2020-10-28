@@ -146,7 +146,111 @@ private static List<List<Integer>> bfs(int[] tree, int levelA, int levelB) {
 
 ```java
 public List<List<Integer>> levelOrder(TreeNode root) {
-    
+    List<List<Integer>> res = new ArrayList<>();
+    if (root == null) return res;
+    Queue<TreeNode> queue = new LinkedList<>();
+    queue.offer(root);
+    while (!queue.isEmpty()) {
+        LinkedList<Integer> curLevel = new LinkedList<>();
+        int sz = queue.size();
+        for (int i = 0; i < sz; i++) {
+            TreeNode node = queue.poll();
+            if ((res.size() & 1) == 0) {
+                // 结果集中包含偶数个元素，说明下一层应该是奇数层。
+                curLevel.addLast(node.val);
+            } else {
+                // 结果集中包含奇数个元素，说明下一层应该是偶数层。
+                curLevel.addFirst(node.val);
+            }
+            if (node.left != null)
+                queue.offer(node.left);
+            if (node.right != null)
+                queue.offer(node.right);
+        }
+        res.add(curLevel);
+
+    }
+    return res;
 }
 ```
 
+## 垂序遍历
+
+## N 叉树定义
+
+```java
+public class Node {
+    
+    public int val;
+    
+    public List<Node> children;
+
+    public Node() {}
+
+    public Node(int _val) {
+        val = _val;
+    }
+
+    public Node(int _val, List<Node> _children) {
+        val = _val;
+        children = _children;
+    }
+}
+```
+
+## N 叉树的前序遍历
+
+<!-- tabs:start -->
+
+#### **递归法**
+
+```java
+public class Solution {
+    
+	private List<Integer> res = new ArrayList<>();
+    
+    public List<Integer> preorder(Node root) {
+        dfs(root);
+        return res;
+    }
+    
+    private void dfs(Node node) {
+        if (node == null)
+            return;
+        res.add(node.val);
+        for (Node child : node.children) {
+            dfs(child);
+        }
+    }
+}
+```
+
+#### **迭代法**
+
+```java
+public class Solution {
+    public List<Integer> preorder(Node root) {
+        List<Integer> res = new ArrayList<>();
+        if (root == null) return res;
+        Deque<Node> stack = new ArrayDeque<>();
+        stack.push(root);
+        while (!stack.isEmpty()) {
+            Node node = stack.pop();
+            res.add(node.val);
+            Collections.reverse(node.children);
+            for (Node child : node.children) {
+                stack.push(child);
+            }
+        }
+        return res;
+    }
+}
+```
+
+<!-- tabs:end -->
+
+## N 叉树的中序遍历
+
+## N 叉树的后序遍历
+
+## N 叉树的层序遍历

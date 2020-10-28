@@ -11,7 +11,7 @@
   * [回溯思想](LeetCode/GirdSearch/)
   * [分治思想](LeetCode/DivideAndConquer)
   * [递归](LeetCode/Recur)
-  * [二叉树](LeetCode/Tree)
+  * [二叉树](LeetCode/Tree/)
   * [图算法](LeetCode/Graph)
   * [矩阵系列问题](LeetCode/Matrix/)
 * [计算机网络](Network/)
