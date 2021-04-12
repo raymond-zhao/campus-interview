@@ -270,12 +270,12 @@
   - **ROW：**不记录每条 SQL 语句的上下文信息，需记录哪条数据被修改了。
   - **MIXED：**一般的复制使用 STATEMENT 模式保存 binlog，对于 STATEMENT 模式无法复制的操作使用 ROW 模式保存 binlog。
 
-**REDO LOG：**只记录事务对数据页做了哪些修改，保证事务四大特性之一的**一致性**。
+**REDO LOG：**只记录事务对数据页做了哪些修改，**保证事务的原子性与持久性**。
 
 - 主要组成部分：MySQL 每执行一条 DML 语句，先将记录写入**内存**中的**日志缓冲**（redo log buffer），后续某个时间点再一次性将多个操作记录写到**磁盘**上的**日志文件**（redo log file）。
 - 记录形式：大小固定，循环写入，当写到结尾时，会回到开头循环写日志。
 
-**UNDO LOG：**记录数据的逻辑变化，保证事务四大特性之一的**原子性**。一条 INSERT 语句，对应一条 DELETE 的 undo log，对于每个 UPDATE 语句，对应一条相反的 UPDATE 的 undo log。也是 MVCC 实现的关键。
+**UNDO LOG：**记录数据的逻辑变化，**保证事务的一致性**。一条 INSERT 语句，对应一条 DELETE 的 undo log，对于每个 UPDATE 语句，对应一条相反的 UPDATE 的 undo log。也是 MVCC 实现的关键。
 
 ## MySQL 为什么选用 RR 做默认隔离级别？
 
