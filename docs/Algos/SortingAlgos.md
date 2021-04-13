@@ -44,7 +44,7 @@ public int[] insertionSort(int[] array) {
         int j = i - 1;
         while (j >= 0 && array[j] > key) {
             // 本次循环的作用是找到属于key的位置
-            // 如果key前面的值大于key的话，则交换二者的位置
+            // 如果key前面的值大于key的话，则交换二者的位置。
             array[j + 1] = array[j];
             j--;
         }

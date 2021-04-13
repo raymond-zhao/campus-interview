@@ -33,7 +33,7 @@
 ## HTTP 与 HTTPS 基础
 
 - HTTP：超文本传输协议（HyperText Transfer Protocol）。
-- HTTPS：超文本传输安全协议（HyperText Transfer Protocol）。
+- HTTPS：超文本传输安全协议（HyperText Transfer Protocol Secure）。
 
 > HTTP的缺点：
 >
