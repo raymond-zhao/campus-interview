@@ -92,7 +92,7 @@ SomeClass someClass = new SomeClass();
 - `@Autowired`：byType, byQualifier, byName
 - 使用场景：主要取决于应用设计者的系统设计思想
   - 如果应用行为基于**接口与抽象类**实现，而且这些行为会被全局性地应用，推荐使用 `@Inject` 或 `@Autowired`，在应用升级或补丁修复时使用 `match-by-type` 的影响较小。
-  - 如果应用拥有非常复杂的行为，每个行为基于不同的**接口与抽象类**，并且**接口与抽象类**拥有较多的具体实现，推荐使用 `@Resource`，优先选择`match-by-name`。
+  - 如果应用拥有非常复杂的行为，每个行为基于不同的**接口与抽象类**，并且**接口与抽象类**拥有较多的具体实现，推荐使用 `@Resource`，优先选择 `match-by-name`。
   - 如果使用场景仅支持 `Jakarta EE` 而不支持 Spring，则只能使用`@Resource` 或 `@Inject`。
   - 如果使用场景仅支持 `Spring`，则只能使用 `@Autowired`。
 
