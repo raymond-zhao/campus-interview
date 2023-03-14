@@ -228,7 +228,7 @@
 
 - 如果是`通过唯一索引来搜索一行记录`的时候，不需要使用 `Gap Locks`，此时 `Gap Locks` 降级为 `Record Locks`。
 - `Gap S-Lock` 与 `Gap X-Lock` 是兼容的。
-- `Gap Locks` 只能_**`阻止其他事务在该Gap中插入记录`**_，但**`无法阻止`**其他事务获取`同一个Gap` 上的 `Gap Lock`。
+- `Gap Locks` 只能 `阻止其他事务在该 Gap 中插入记录`，但 `无法阻止` 其他事务获取 `同一个 Gap` 上的 `Gap Lock`。
 - 可以通过将事务隔离级别设置为 READ COMMITTED 禁用 `Gap Locks`。
 
 ## SQL 的执行过程

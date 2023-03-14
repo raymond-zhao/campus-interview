@@ -35,7 +35,9 @@
 
 ```java
 public int[] insertionSort(int[] array) {
-    if (array.length == 0) return array;
+    if (array == null || array.length == 0) {
+     	 return array;
+    }
     for (int i = 1; i < array.length; i++) {
         // 先保存要插入的值，然后寻找它需要插入的位置
         int key = array[i];
