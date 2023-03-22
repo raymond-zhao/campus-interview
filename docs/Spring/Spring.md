@@ -1,23 +1,6 @@
-## 对 IoC/DI 的理解
+# IoC 的前世今生
 
-> 词源：目前来看，首先提出 IoC 的并不是 Martin Fowler，而是 Johnson 与 Foote 在 1988 年发表的论文《[Designing Reusable Classes](http://www.laputan.org/drc/drc.html)》，之后在社区内流传，后来被 GoF 写进《设计模式》。
-
-在软件工程中，IoC 是被广泛应用于面向对象编程中的一种设计模式，有时也被称为 DI（依赖注入），DI 是实现 IoC 的一种方式。
-
-在面向对象编程（`OOP`）中，通常是一个类中使用了许多其他对象作为其成员变量，来完成相应的功能，而为了使用某个对象的功能，首先要**初始化/设置**这个对象，通常需要使用 `Setter`执行 `setItem(Item item)` 或使用 `Constructor` 进行 `new Object(Item item)` 操作。
-
-> 使用多参构造器暗示了这个对象做了不止一件事，违反了**单一指责原则**。
-
-而在使用 `Item` 之前，首先还需要完成 `Item` 的初始化，同样的，在初始化 `Item` 时，可能 `Item` 也有很多其他**依赖（Dependencies）**需要初始化。
-
-因此为了执行一个 `setItem(Item item)` 动作，可能要手动执行很多其他依赖的设置，为了解决这种复杂的**依赖注入与控制**，在 Java 中可以把这项工作**外包**给 `Spring`，以后使用某个对象时，可以对 `Spring` 说：“Hey spring，我现在需要一个 `Item` 的对象，我不关心你怎么构建，不关心你什么时候构建，不关心你花了多久构建，总之给我一个 `Item` 对象就好。”
-
-简而言之，由 **大头兵** 向 **M** 转变（🐶 保命），只管需要时**索取**，不再手动**贡献**，不再关心具体过程，而只关心产出与结果。
-
-- [Inversion of Control Containers and the Dependency Injection pattern - Martin Fowler](https://martinfowler.com/articles/injection.html)
-- [InversionOfControl - Martin Fowler](https://martinfowler.com/bliki/InversionOfControl.html)
-
-## 阅读 Martin Fowler 文章的一些思考与体会
+## Matrin Fowler 的文章
 
 ### 问题的出现与思考
 
@@ -29,10 +12,10 @@
 
 - 争论焦点：只谈控制反转，不谈**反转了什么**没有实际意义。
 
-- 反转的内容：如何定位插件的具体实现，如何消除应用程序对插件的具体实现的依赖，如何在运行期动态**加载/注入**新的具体实现？
+- 反转的内容：如何定位插件的具体实现，如何jkjkkjkjk消除应用程序对插件的具体实现的依赖，如何在运行期动态**加载/注入**新的具体实现？
 - 反转的实现：
-  - Service Locator：应用程序代码直接向服务定位器发送一个消息，明确要求服务的实现；
-  - Dependency Injection：应用程序代码不发出显式的请求，服务的实现自然会出现在应用程序的代码中，**此谓”控制反转“**。
+    - Service Locator：应用程序代码直接向服务定位器发送一个消息，明确要求服务的实现；
+    - Dependency Injection：应用程序代码不发出显式的请求，服务的实现自然会出现在应用程序的代码中，**此谓”控制反转“**。
 - 一切的关键：**配置的服务与使用应该分开**，也是一个基本的设计原则（分离接口与实现）。
 
 Spring 并不是首先实现 IoC 的先驱者，实际上，在早期由应用程序向 UI 界面的转变也是控制反转，**控制权由应用程序转移到 UI 框架**。
@@ -63,16 +46,207 @@ Martin 在与多位 IoC 爱好者讨论后，决定将**控制反转**这个模�
 - 但是，如果参数太多，也恰恰说明了这个对象的设计可能并不合理，因为这表示一个对象承担了太多的职责，违反了**单一职责原则**，需要进行拆分设计。
 - 构造器之间只能通过参数的格式与类型加以区分，增加了使用时的理解与选择成本。
 
-## Spring 中的 IoC
+## 对 IoC/DI 的理解
+
+> 词源：目前来看，首先提出 IoC 的并不是 Martin Fowler，而是 Johnson 与 Foote 在 1988 年发表的论文《[Designing Reusable Classes](http://www.laputan.org/drc/drc.html)》，之后在社区内流传，后来被 GoF 写进《设计模式》。
+
+在软件工程中，IoC 是被广泛应用于面向对象编程中的一种设计模式，有时也被称为 DI（依赖注入），DI 是实现 IoC 的一种方式。
+
+在面向对象编程（`OOP`）中，通常是一个类中使用了许多其他对象作为其成员变量，来完成相应的功能，而为了使用某个对象的功能，首先要**初始化/设置**这个对象，通常需要使用 `Setter`执行 `setItem(Item item)` 或使用 `Constructor` 进行 `new Object(Item item)` 操作。
+
+> 使用多参构造器暗示了这个对象做了不止一件事，违反了**单一指责原则**。
+
+而在使用 `Item` 之前，首先还需要完成 `Item` 的初始化，同样的，在初始化 `Item` 时，可能 `Item` 也有很多其他**依赖（Dependencies）**需要初始化。
+
+因此为了执行一个 `setItem(Item item)` 动作，可能要手动执行很多其他依赖的设置，为了解决这种复杂的**依赖注入与控制**，在 Java 中可以把这项工作**外包**给 `Spring`，以后使用某个对象时，可以对 `Spring` 说：“Hey spring，我现在需要一个 `Item` 的对象，我不关心你怎么构建，不关心你什么时候构建，不关心你花了多久构建，总之给我一个 `Item` 对象就好。”
+
+简而言之，由 **大头兵** 向 **M** 转变（🐶 保命），只管需要时**索取**，不再手动**贡献**，不再关心具体过程，而只关心产出与结果。
+
+- [Inversion of Control Containers and the Dependency Injection pattern - Martin Fowler](https://martinfowler.com/articles/injection.html)
+- [InversionOfControl - Martin Fowler](https://martinfowler.com/bliki/InversionOfControl.html)
+
+# Spring IoC
 
 在 Spring 中，接口 `ApplicationContext` 代表 IoC 容器，负责对象的**初始化、配置、组装**，生产出的对象被称为 `Bean`，并管理其生命周期。
 
 - [The IoC container - Spring Framework Docs](https://docs.spring.io/spring-framework/docs/current/reference/html/core.html#beans)
 - [Intro to Inversion of Control and Dependency Injection with Spring - Baeldung](https://www.baeldung.com/inversion-control-and-dependency-injection-in-spring)
 
-## 什么场景下需要使用 @Bean？
+## IoC 容器的核心工作流程
 
-## Spring 中的装配：Autowire/Resource/Inject
+Spring IoC（控制反转）容器的核心工作流程如下：
+
+1. 加载配置文件：Spring IoC 容器通过读取配置文件（通常是 XML 文件）来了解如何创建和配置各种 Bean。
+2. 实例化 Bean：Spring IoC 容器根据配置文件中的定义创建 Bean 的实例。
+3. 注入依赖：Spring IoC 容器会自动为 Bean 注入依赖关系，这意味着它会查找并注入所需的其他 Bean，以满足 Bean 的依赖关系。
+4. 处理 BeanPostProcessor：Spring IoC 容器会处理 BeanPostProcessor 接口的实现类，这些类可以在 Bean 实例化和依赖注入之后进行一些自定义的初始化操作。
+5. 装配 Bean：Spring IoC 容器会将各个 Bean 装配到相应的位置，这通常涉及将 Bean 放入合适的作用域中（如单例或原型），并将它们暴露给其他 Bean。
+6. Bean 的使用：Spring IoC 容器可以将 Bean 注入到其他对象中，或者通过应用程序代码显式地请求访问 Bean。
+
+总的来说，Spring IoC 容器的核心工作流程是将 Bean 的创建、装配和管理从应用程序代码中解耦，从而使得应用程序代码更加简洁、可读性更强，并且易于维护和扩展。
+
+## 源码中的 IoC 刷新过程
+
+1. 添加同步锁
+2. 为刷新准备上下文：设置启动时间与激活状态，执行属性资源的初始化。
+    1. 设置为激活状态
+    2. 开启日志
+    3. 初始化上下文环境中的所有预占熟悉资源，由子类决定具体需要初始化的内容。
+    4. 验证上下文环境中所有被标记为“必须”核“可解析”的熟悉
+    5. 初始化用于预刷新的应用监听器
+    6. 初始化应用事件容器，待后续多播器可用时，发布此集合中的事件。
+3. 告知各子类刷新内部 Bean 工厂
+4. 准备当前上下文所需要的 Bean 工厂
+    1. 告诉内部 Bean 工厂使用所属上下文的类加载器
+    2. 设置 Bean 表达式解析器
+    3. 添加属性编辑器注册机
+    4. 配置 Bean 工厂的上下文回调函数（Aware 处理器等），添加 Bean 后置处理器等。
+    5. 忽略若干个 `Aware` 接口（`EnvironmentAware, ResourceLoaderAware, MessageSourceAware`, `ApplicationContextAware` 等等）
+    6. 注册一些可解析的依赖（`BeanFactory`, `ResourceLoader`, `ApplicationContext`, `ApplicationEventPublisher`）
+    7. 注册用于检测内部 Bean 的早期后置处理器作为 ApplicationListeners
+    8. 如果检测到**加载时织入器（``LoadTimeWeaver`）**，则准备织入，但是需要为类型匹配的上下文设置临时的类加载器。
+    9. 以单例模式注册 `EnvironmentBean`
+    10. 以单例模式注册 `SystemPropertiesBean`
+    11. 以单例模式注册 `SystemEnvironmentBean`
+    12. 以单例模式注册 `ApplicationStartupBean`
+5. 执行当前上下文子类中的 BeanFactory 的后置处理
+    1. 在完成标准模式的应用上下文初始化之后，修改应用上下文中的 BeanFactory。
+    2. 初始的资源定义会被加载，但是不会执行后置处理器，也不会注册派生的 Bean，更重要的是，也没有初始化任何 Bean。
+    3. 这个模板方法允许注册特殊的 Bean 后置处理器到 `AbstractApplicationContext` 的子类之中
+6. 调用上下文中注册为 Bean 的工厂处理器：初始化并调用所有注册为 `BeanFactoryPostProcessor` 的 Bean，如果显式制定了顺序，则按照顺序执行。
+    1. 调用 BeanFactoryPostProcessors
+    2. 检测“加载时织入器”并准备织入，比如被 `@Bean` 注解标记并被 `ConfigurationClassPostProcessor` 注册的方法。
+
+7. 注册用于拦截 Bean 创建的处理器
+    1. 初始化并注册所有的 `BeanFactoryPostProcessor`，如果显式指定了顺序，则按照顺序执行。
+
+8. 初始化当前上下文中的消息资源
+9. 初始化当前上下文中的应用事件广播器，如果未定义，则使用 `SimpleApplicationEventMulticaster`。
+10. 特定的上下文子类重写模板方法，初始化其他具有特殊用途的 Bean。
+11. 检查应用监听器，并注册到多播器，最后发布早期的应用事件。
+12. 完成当前上下文中 `BeanFactory` 的初始化，初始化所有剩余的非懒加载的单例。
+     1. 初始化当前上下文的转换服务（`ConversionService`）
+     2. 如果之前没有注册过 `BeanFactoryPostProcessor`，注册一个默认的**内置解析器**，用于解析注解的属性值。
+     3. 初始化 `LoadTimeWeaverAware` 类型的 Bean，以便可以尽早地注册它们的转换器。
+     4. 清空之前设置的临时类加载器，不再使用临时类加载器进行类型匹配。
+     5. 缓存所有定义 Bean 的元数据，短时间内不会再有更改。
+     6. 初始化所有剩余的非懒加载的实例
+
+13. 完成上下文刷新，发布事件。
+     1. 清空上下文级别的资源缓存（如 ASM 扫描时产生的元数据）
+     2. 初始化当前上下文中的生命周期处理器
+     3. 将完成刷新的通知给到生命周期处理器
+     4. 发布最终的事件
+
+14. 如果执行步骤 2~11 过程中产生异常
+     1. 销毁已经创建完成的单例，避免资源紊乱。
+     2. 取消刷新动作，重置“激活状态”。
+     3. 上抛异常
+15. 最后，重置 Spring 内核中的公共缓存，因为我们很可能再也不会用到这些元数据区创建单例了。
+
+源码位于 [org.springframework.context.support.AbstractApplicationContext#refresh](https://github.com/spring-projects/spring-framework/blob/main/spring-context/src/main/java/org/springframework/context/support/AbstractApplicationContext.java)
+
+```java
+@Override
+	public void refresh() throws BeansException, IllegalStateException {
+		synchronized (this.startupShutdownMonitor) {
+			// 同步锁
+			StartupStep contextRefresh = this.applicationStartup.start("spring.context.refresh");
+
+			// Prepare this context for refreshing.
+			// 为刷新准备上下文
+			prepareRefresh();
+
+			// Tell the subclass to refresh the internal bean factory.
+			// 告诉各子类刷新内部 Bean 工厂
+			ConfigurableListableBeanFactory beanFactory = obtainFreshBeanFactory();
+
+			// Prepare the bean factory for use in this context.
+			// 准备当前上下文中需要使用的 Bean 工厂
+			prepareBeanFactory(beanFactory);
+
+			try {
+				// Allows post-processing of the bean factory in context subclasses.
+				// 执行 IoC 容器 BeanFactory 的后置处理
+				postProcessBeanFactory(beanFactory);
+
+				StartupStep beanPostProcess = this.applicationStartup.start("spring.context.beans.post-process");
+				// Invoke factory processors registered as beans in the context.
+				// 调用上下文中注册为 Bean 的工厂处理器
+				invokeBeanFactoryPostProcessors(beanFactory);
+
+				// Register bean processors that intercept bean creation.
+				// 注册拦截 Bean 创建的 Bean 处理器
+				registerBeanPostProcessors(beanFactory);
+				beanPostProcess.end();
+
+				// Initialize message source for this context.
+				// 初始化当前上下文中的消息资源
+				initMessageSource();
+
+				// Initialize event multicaster for this context.
+				// 初始化当前上下文中的事件广播器
+				initApplicationEventMulticaster();
+
+				// Initialize other special beans in specific context subclasses.
+				// 在特定的上下文子类中初始化其他的具有特殊用途的 Bean
+				onRefresh();
+
+				// Check for listener beans and register them.
+				// 检查并注册监听器 Bean
+				registerListeners();
+
+				// Instantiate all remaining (non-lazy-init) singletons.
+				// 初始化所有的非懒加载的单例 Bean
+				finishBeanFactoryInitialization(beanFactory);
+
+				// Last step: publish corresponding event.
+				// 完成上下文刷新，发布事件。
+				finishRefresh();
+
+			} catch (BeansException ex) {
+				if (logger.isWarnEnabled()) {
+					logger.warn("Exception encountered during context initialization - " +
+							"cancelling refresh attempt: " + ex);
+				}
+
+				// Destroy already created singletons to avoid dangling resources.
+				// 销毁已经创建完成的单例，避免资源紊乱。
+				destroyBeans();
+
+				// Reset 'active' flag.
+				// 取消刷新，重置"激活状态"。
+				cancelRefresh(ex);
+
+				// Propagate exception to caller.
+				// 异常上抛
+				throw ex;
+			} finally {
+				// Reset common introspection caches in Spring's core, since we
+				// might not ever need metadata for singleton beans anymore...
+				// 重置 Spring 内核中的公共缓存，因为我们可能再也不会用到这些元数据去创建单例了。
+				resetCommonCaches();
+				contextRefresh.end();
+			}
+		}
+	}
+```
+
+## BeanFactory 和 FactoryBean 的区别是什么?
+
+Spring BeanFactory 和 FactoryBean 是两个不同的概念，虽然它们的名称很相似，但它们的作用和使用场景是不同的。
+
+BeanFactory 是 Spring IoC 容器的最基本接口，是所有 Spring IoC 容器的基础，提供了一种用于实例化、配置和管理 Spring Bean 的机制。它是 Spring 框架的核心，负责管理 Spring Bean 的生命周期、依赖关系以及各种配置细节。
+
+FactoryBean 是一个特殊的 Bean，它的主要作用是创建和管理其他 Bean。内部封装了实例化复杂 Bean 的逻辑，可以在 Bean 实例化之前进行一些自定义的处理操作，例如条件化创建 Bean 实例、延迟创建 Bean 实例等。FactoryBean 接口定义了两个方法：`getObject()` 和 `getObjectType()`，分别用于获取被管理 Bean 的实例和类型。
+
+可以说，FactoryBean 是一种特殊的 Bean，它的主要作用是用于创建和管理其他 Bean，而 BeanFactory 则是 Spring IoC 容器的核心接口，它负责管理所有的 Spring Bean，包括 FactoryBean 和普通 Bean。
+
+总的来说，BeanFactory 和 FactoryBean 在 Spring 中有不同的作用和使用场景，BeanFactory 是 Spring IoC 容器的基础接口，负责管理所有的 Bean，而 FactoryBean 则是一种特殊的 Bean，用于封装复杂的 Bean 实例化逻辑。
+
+## 依赖注入的方式
+
+> `@Autowire`，`@Resource`，`@Inject`。
 
 ```java
 // 声明式编程（declarative programming）
@@ -135,6 +309,10 @@ IoC 可以被类比为餐馆中，顾客下单与厨师根据顾客订单准备�
 2. 选择一个 DI 框架或自主实现 DI 容器；
 3. 定义应用组件及其依赖；
 4. 通过选用的 DI 容器注入组件所需的依赖。
+
+# Spring Bean
+
+## 什么是 Spring Bean？
 
 ## Bean 作用域
 
@@ -210,12 +388,14 @@ private final Map<String, ObjectFactory<?>> singletonFactories = new HashMap<>(1
 
 参考：[一文告诉你 Spring 是如何利用"三级缓存"巧妙解决 Bean 的循环依赖问题的](https://cloud.tencent.com/developer/article/1497692)
 
+# Spring 事务
+
 ## Spring 事务隔离级别
 
 > 与此类似的有 `java.sql.Connection` 的事务隔离级别 `TRANSACTION_XXX`。
 
 - `ISOLATION_DEFAULT = -1`: 使用数据库所提供的事务隔离级别；
-- `ISOLATION_READ_COMMITTED = 1`：可能会产生脏读、不可重复读、幻读；
+- `ISOLATION_READ_UNCOMMITTED = 1`：可能会产生脏读、不可重复读、幻读；
 - `ISOLATION_READ_COMMITTED = 2`：可以解决脏读，但可能会产生不可重复读与幻读；
 - `ISOLATION_REPEATABLE_READ = 4`：可以解决脏读与不可重复读，但可能会产生幻读；
 - `ISOLATION_SERIALIZABLE = 8`：可以解决脏读、幻读、不可重复读。
@@ -238,7 +418,7 @@ private final Map<String, ObjectFactory<?>> singletonFactories = new HashMap<>(1
 
 **其他情况：**
 
-- **`PROPAGATION_NESTED = 6`：** 如果当前存在事务，则以内嵌事务的形式运行；如果当前没有事务，则该取值等价于**PROPAGATION_REQUIRED**。
+- **`PROPAGATION_NESTED = 6`：** 如果当前存在事务，则以内嵌事务的形式运行；如果当前没有事务，则该取值等价于 **PROPAGATION_REQUIRED**。
 
 **实现**：基于 `ThreadLocal` ，因此不可跨线程，跨线程需要**透传**。
 
@@ -276,9 +456,9 @@ private final Map<String, ObjectFactory<?>> singletonFactories = new HashMap<>(1
 
 ## Spring 中的事务具体怎么实现的？
 
-1. 如果 Spring 没有指定事务隔离级别，则会采用数据库默认的事务隔离级别；当 Spring 指定了事务隔离级别，则会在代码里将事务隔离级别修改为指定值；当数据库不支持 Spring 指定的隔离级别，效果则以数据库的为准（比如采用了 MyISAM 引擎）。
+1. 如果 Spring 没有指定事务隔离级别，则会采用数据库默认的事务隔离级别；当 Spring 指定了事务隔离级别，则会在代码里将事务隔离级别修改为指定值；当数据库不支持 Spring 指定的隔离级别时，效果则以数据库的为准（比如采用了 MyISAM 引擎）。
 2. Spring 事务的底层**依赖于数据库的事务**，代码层面上利用 AOP 实现。MySQL 的事务有隔离级别的概念，只有 InnoDB 有事务，实现方式是利用 undo log 和 redo log。
-3. 通过 AOP 实现声明式事务。
+3. 通过 AOP 实现声明式事务
 4. 通过注解的事务方式为**声明式事务**，但是 Spring 也通过 `TransactionTemplate` 提供了**编程式事务**。
 
 ## Spring MVC 工作流程
@@ -299,7 +479,9 @@ private final Map<String, ObjectFactory<?>> singletonFactories = new HashMap<>(1
 
 > - [从 SpringMvc 源码分析其工作原理](https://juejin.im/post/6844903826000969742)
 
-## Spring 中的设计模式
+# Spring 中的设计模式
+
+## 答案 1
 
 1. 工厂设计模式 : Spring 使用工厂模式通过 BeanFactory、ApplicationContext 创建 bean 对象。
 2. 代理设计模式 : Spring AOP 功能的实现
@@ -310,5 +492,19 @@ private final Map<String, ObjectFactory<?>> singletonFactories = new HashMap<>(1
 7. 适配器模式: Spring AOP 的增强或通知（Advice）使用到了适配器模式、Spring MVC 中也是用到了适配器模式适配 Controller。
 
 > 推荐阅读：[面试官:“谈谈 Spring 中都用到了那些设计模式?”](https://juejin.im/post/6844903849849962509)
+
+## 答案 2：ChatGPT
+
+在 Spring 框架中，有许多设计模式被广泛应用，以下是一些常见的设计模式：
+
+1. 依赖注入（Dependency Injection）：Spring 框架中最核心的特性之一。它通过控制反转（Inversion of Control）实现，利用工厂模式创建对象，并通过依赖注入的方式将对象注入到调用方。这样，应用程序的组件可以完全脱离具体的实现，实现了松耦合。
+2. AOP（面向切面编程）：Spring 框架通过 AOP 实现对横切关注点的处理，如事务、安全、缓存、日志等。AOP 主要利用代理模式实现，可以将横切关注点抽象出来形成切面（Aspect），通过将切面织入到目标对象中，来实现横切关注点的处理。
+3. 工厂模式（Factory Pattern）：Spring 中有很多工厂类用于创建和管理对象，如 BeanFactory 和 ApplicationContext。这些工厂类都是使用工厂模式来实现的。
+4. 单例模式（Singleton Pattern）：Spring 容器中的对象默认都是单例的，可以避免创建大量的重复对象，提高应用程序的性能。
+5. 观察者模式（Observer Pattern）：Spring 框架中的事件驱动模型就是使用观察者模式实现的，事件源发布事件后，监听该事件的监听器就会接收到通知并进行相应的处理。
+6. 模板方法模式（Template Method Pattern）：Spring 中的 JdbcTemplate 就是使用模板方法模式实现的，提供了一些标准的 SQL 操作方法，具体的 SQL 操作则由子类来实现。
+7. 代理模式（Proxy Pattern）：Spring 中的 AOP 就是使用代理模式实现的，通过代理对象来实现对目标对象的增强处理。
+
+总之，Spring 框架的设计思想是基于众多经典的设计模式，并将其结合在一起，形成了一个强大的框架，可以大大提高应用程序的开发效率和可维护性。
 
 ## Spring 是如何把注解标注的对象加入 IoC 容器的？
