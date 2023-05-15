@@ -95,9 +95,7 @@
 
 ## 经典垃圾收集器
 
-![HotSpot虚拟机的垃圾收集器](https://tva1.sinaimg.cn/large/00831rSTly1gdi4n03nm9j31110u011r.jpg)
-
-
+![HotSpot虚拟机的垃圾收集器](https://cdn.jsdelivr.net/gh/raymond-zhao/pictures@main/uPic/image-20230516073732595.png)
 
 
 

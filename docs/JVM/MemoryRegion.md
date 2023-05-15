@@ -1,6 +1,6 @@
 ## 运行时数据区
 
-<img src="https://tva1.sinaimg.cn/large/00831rSTly1gdhy19il1mj312s0u0k6g.jpg" alt="运行时数据区" style="zoom:67%;" />
+![运行时数据区](https://cdn.jsdelivr.net/gh/raymond-zhao/pictures@main/uPic/image-20230516073918291.png)
 
 > 线程私有：**虚拟机栈、本地方法栈、程序计数器**；
 >
@@ -49,7 +49,7 @@
 
 ### 运行时常量池
 
-- 方法区的一部分。
+- 方法区的一部分
 - Class 文件中除了有**类的版本、字段、方法、接口**等描述信息外，还有一项信息是**常量池表**(ConstantPoolTable)，用于存放编译期生成的各种**字面量**与**符号引用**，这部分内容将在类加载后存放到**方法区的运行时常量池**中。
 
 ### 直接内存
@@ -61,8 +61,8 @@
 - 使用 `new` 关键字；
 - 使用 Class 类的 newInstance() 方法。`User user = User.class.newInstance();`
 - 使用 Constructor 类的 newInstance() 方法。`User user = User.class.getConstructor().newInstance();`
-- 使用 Clone() 方法；
-- 使用反序列化。
+- 使用 Clone() 方法
+- 使用反序列化
 
 ### new 的过程发生了什么？
 

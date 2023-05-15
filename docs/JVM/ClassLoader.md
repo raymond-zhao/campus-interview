@@ -1,6 +1,6 @@
 ## 类加载过程
 
-![类加载过程](https://tva1.sinaimg.cn/large/007S8ZIlly1gj7t2gw8xxj30ha05saax.jpg)
+![image-20230516072252090](https://cdn.jsdelivr.net/gh/raymond-zhao/pictures@main/uPic/image-20230516072252090.png)
 
 1. 类加载主要分为三个过程，分别是加载、连接、初始化，其中连接过程又分为验证、准备、解析三个步骤。
 2. **加载过程**，在这个过程虚拟机需要完成三件事情
@@ -57,9 +57,9 @@
 
 ## 如何自己实现类加载器？
 
-1. 继承`java.lang.ClassLoader`类
-2. 如果想打破双亲委派模型的话，重写`loadClass()`类
-3. 如果不想打破双亲委派模型的话，重写`findClass()`类
+1. 继承 `java.lang.ClassLoader` 类
+2. 如果想打破双亲委派模型的话，重写 `loadClass()` 类。
+3. 如果不想打破双亲委派模型的话，重写 `findClass()` 类。
 
 ## Tomcat 是如何违背双亲委派模型的
 
@@ -70,7 +70,7 @@ Tomcat 作为 Web 容器：
 3. Web 容器也有自己依赖的类库，不能与应用程序的类库混淆；
 4. 需要**隔离性**。
 
-![Tomcat 类加载模型](https://tva1.sinaimg.cn/large/007S8ZIlly1gj7taxqg87j30cu0i774f.jpg)
+[Tomcat 官方文档](https://tomcat.apache.org/tomcat-9.0-doc/class-loader-howto.html)
 
 在 Tomcat 的类加载机制中：
 
@@ -78,6 +78,8 @@ Tomcat 作为 Web 容器：
 - Tomcat 自定义了 Common 类加载器（已加载的 class 可被 **Tomcat Server本身** 及**各个 WebApp **访问）；
 - 自定义了 Catalina ClassLoader（类对 WebApp 不可见）、SharedClassLoader （WebApp 共享，；类对所有 WebApp 可见，对 Catelina 不可见）作为 CommonClassLoader 的两个子加载器，它们之间相互隔离。
 - 在 SharedClassLoader 下定义了子类加载器 WebAppClassLoader（WebApp 私有，加载路径中的类只对当前 WebApp 可见，可以使用 SharedXX 加载的类），再之下是  JasperLoader（仅限于 JSP 编译出的类文件，目的是实现热更新。当JSP被修改时，替换掉当前的 JasperLoader 实例，建立新的JSP类加载器实现热更新）。
+
+![img](https://ask.qcloudimg.com/http-save/yehe-7798898/0hrxobw3l2.png?imageView2/2/w/1200)
 
 > 如果 Common ClassLoader 想加载 WebApp ClassLoader 中的类该怎么办？
 >
